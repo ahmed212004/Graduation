@@ -1,22 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 
-function ForgotPassword() {
+function RegisterPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/Dashboard", { replace: true });
+    }
+  }, [navigate]);
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setErrors([]);
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const extractErrors = (err) => {
+    if (err.response?.data) {
+      const data = err.response.data;
+      if (data.errors) return Object.values(data.errors).flat();
+      if (data.message) return [data.message];
+      if (data.title) return [data.title];
+    }
+    return ["Server not responding"];
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.email || !form.password) {
+      setErrors(["Email and Password are required"]);
+      return;
+    }
+
     try {
       setLoading(true);
-      await api.post("/api/Authentication/forgot-password", { email });
-      navigate("/reset-code", { state: { email } });
+      await api.post("/api/Authentication/register", form);
+      navigate("/verify", {
+        state: { email: form.email },
+      });
     } catch (err) {
-      setMessage(err.response?.data?.message || "Error sending request");
+      setErrors(extractErrors(err));
     } finally {
       setLoading(false);
     }
@@ -25,40 +59,51 @@ function ForgotPassword() {
   return (
     <div style={styles.pageBackground}>
       <Navbar />
+
       <div style={styles.container}>
         <div style={styles.headerSection}>
           <div style={styles.logoContainer}>
             <svg width="24" height="28" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 0L0 4.5V13.5C0 21.05 5.14 27.97 12 30C18.86 27.97 24 21.05 24 13.5V4.5L12 0Z" fill="#3b82f6"/></svg>
           </div>
-          <h1 style={styles.brandTitle}>SYSTEM RECOVERY</h1>
-          <p style={styles.brandSubtitle}>INITIATE PASSWORD RESET</p>
+          <h1 style={styles.brandTitle}>STRIKE DEFENDER</h1>
+          <p style={styles.brandSubtitle}>NEW RECRUIT CLEARANCE</p>
         </div>
 
         <div style={styles.box}>
-          {message && (
+          {errors.length > 0 && (
             <div style={styles.errorBox}>
-              <p style={{ margin: 0 }}>{message}</p>
+              {errors.map((e, i) => <p key={i} style={{ margin: 0 }}>{e}</p>)}
             </div>
           )}
 
           <form onSubmit={handleSubmit}>
             <div style={styles.inputGroup}>
-              <label style={styles.label}>REGISTERED EMAIL</label>
+              <label style={styles.label}>ASSIGN ENTERPRISE EMAIL</label>
               <div style={styles.inputWrapper}>
                 <span style={styles.inputIcon}>@</span>
-                <input type="email" placeholder="user@enterprise.com" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.input} required />
+                <input type="email" name="email" placeholder="user@enterprise.com" onChange={handleChange} style={styles.input} />
+              </div>
+            </div>
+
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>CREATE SECURITY PASSWORD</label>
+              <div style={styles.inputWrapper}>
+                <span style={styles.inputIcon}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                </span>
+                <input type="password" name="password" placeholder="••••••••" onChange={handleChange} style={styles.input} />
               </div>
             </div>
 
             <button style={styles.submitButton} disabled={loading}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '8px'}}><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-              {loading ? "TRANSMITTING..." : "SEND RECOVERY CODE"}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '8px'}}><path d="M16 21v-2a4 4 0 0 0-4-4H5c-1.1 0-2 .9-2 2v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+              {loading ? "INITIALIZING..." : "REQUEST CLEARANCE"}
             </button>
           </form>
 
           <div style={styles.boxFooter}>
-             <p style={styles.signUpText}>
-              Remembered your credentials? <span onClick={() => navigate("/login")} style={styles.signUpLink}>Abort</span>
+            <p style={styles.signUpText}>
+              Already have access? <span onClick={() => navigate("/login")} style={styles.signUpLink}>Secure Login</span>
             </p>
           </div>
         </div>
@@ -67,7 +112,7 @@ function ForgotPassword() {
   );
 }
 
-// 📌 استخدم نفس متغيرات الـ styles الموجودة في صفحة الـ Register بالظبط هنا بدون أي تغيير
+// 📌 ملحوظة: الـ styles هنا هي نفسها بتاعة الـ Login بالظبط
 const styles = {
   pageBackground: { minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "#050914", backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px)`, backgroundSize: "40px 40px", fontFamily: "'Inter', sans-serif", position: "relative" },
   container: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", paddingTop: "60px", paddingBottom: "80px" },
@@ -87,4 +132,5 @@ const styles = {
   signUpText: { color: "#94a3b8", fontSize: "13px" },
   signUpLink: { color: "#ffffff", fontWeight: "600", cursor: "pointer", marginLeft: "5px" }
 };
-export default ForgotPassword;
+
+export default RegisterPage;
