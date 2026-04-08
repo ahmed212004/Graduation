@@ -4,7 +4,6 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { motion, AnimatePresence } from "framer-motion";
 
-// استدعاء ملف الستايل (تأكد من صحة المسار)
 import "../style/Simulator.css";
 
 function PromptTesting() {
@@ -13,10 +12,10 @@ function PromptTesting() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // لإدارة السايدبار في الموبايل
 
   const handleTestPrompt = async () => {
     if (!promptText.trim()) return;
-
     setLoading(true);
     setError(null);
     setResult(null);
@@ -37,10 +36,16 @@ function PromptTesting() {
   return (
     <div className="simulator-page-wrapper">
       <Navbar />
-      <div className="simulator-container">
-        <Sidebar />
+      
+      {/* زر الموبايل للسايدبار (بنفس ستايل الداشبورد) */}
+      <button className="mobile-menu-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        {isMenuOpen ? "✕" : "☰"}
+      </button>
 
-        <main className="simulator-main">
+      <div className="simulator-container">
+        <Sidebar isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
+
+        <main className={`simulator-main ${isMenuOpen ? 'blur-effect' : ''}`} onClick={() => isMenuOpen && setIsMenuOpen(false)}>
           <header style={{ marginBottom: "30px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <h1 style={{ fontSize: "26px", fontWeight: "bold", margin: 0 }}>AI Attack Simulator</h1>
@@ -97,10 +102,10 @@ function PromptTesting() {
                   )}
 
                   {loading && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ color: "#3b82f6" }}>
-                      {"[>]"} Initializing Neural Scan...<br />
-                      {"[>]"} Analyzing payload entropy...<br />
-                      {"[>]"} Matching against attack patterns...
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ color: "#3b82f6", lineHeight: '1.8' }}>
+                      {`[>]`} Initializing Neural Scan...<br />
+                      {`[>]`} Analyzing payload entropy...<br />
+                      {`[>]`} Matching against attack patterns...
                     </motion.div>
                   )}
 
