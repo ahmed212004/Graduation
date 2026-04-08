@@ -4,16 +4,14 @@ import CountUp from "react-countup";
 import { motion } from "framer-motion";
 import api from "../services/api";
 
-// Components
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 
-// CSS أهم سطر عشان الزراير تظبط
 import "../style/Dashboard.css";
 
 const MetricCard = ({ title, value, change, color, icon }) => (
   <motion.div whileHover={{ y: -5 }} className="metric-card">
-    <div className="flex-between">
+    <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
       <span style={{ color: "#64748b", fontWeight: "600" }}>{title}</span>
       <span>{icon}</span>
     </div>
@@ -56,7 +54,7 @@ function Dashboard() {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
-  if (loading) return <div className="page-wrapper" style={{display:'flex', justifyContent:'center', alignItems:'center', color:'white'}}>LOADING...</div>;
+  if (loading) return <div className="page-wrapper" style={{display:'flex', justifyContent:'center', alignItems:'center', color:'white', height:'100vh'}}>LOADING...</div>;
 
   return (
     <div className="page-wrapper">
@@ -69,7 +67,7 @@ function Dashboard() {
       <div className="dashboard-container">
         <Sidebar isOpen={isMenuOpen} />
 
-        <main className={`dashboard-main ${isMenuOpen ? 'blur-effect' : ''}`} onClick={() => setIsMenuOpen(false)}>
+        <main className={`dashboard-main ${isMenuOpen ? 'blur-effect' : ''}`} onClick={() => isMenuOpen && setIsMenuOpen(false)}>
           <nav style={{color: "#64748b", fontSize: "12px", marginBottom: "20px"}}>
             Main Console › Analytics › <span style={{color: "#fff"}}>Security_Stream</span>
           </nav>
@@ -101,7 +99,7 @@ function Dashboard() {
 
             <div style={{background: "#0f172a", border: "1px solid #1e293b", borderRadius: "16px", padding: "30px", textAlign: "center"}}>
                <p style={{color: "#fff", marginBottom: "20px"}}>THREAT RATIO</p>
-               <div style={{width: "120px", height: "120px", border: "8px solid #3b82f6", borderRadius: "50%", margin: "0 auto 20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", fontWeight: "bold"}}>
+               <div style={{width: "120px", height: "120px", border: "8px solid #3b82f6", borderRadius: "50%", margin: "0 auto 20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", fontWeight: "bold", color:'white'}}>
                 {100 - stats.successRate}%
                </div>
                <button className="blue-action-btn">Export Logs</button>
