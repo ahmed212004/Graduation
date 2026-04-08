@@ -94,6 +94,13 @@ function Dashboard() {
       fetchDashboardData();
     }
   }, [navigate, fetchDashboardData]);
+  if (loading) {
+  return (
+    <div style={{ background: '#020617', color: '#3b82f6', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      AUTHENTICATING SYSTEM METRICS...
+    </div>
+  );
+}
 
   return (
     <div style={styles.pageWrapper}>
