@@ -4,12 +4,12 @@ import CountUp from "react-countup";
 import { motion } from "framer-motion";
 import api from "../services/api";
 
-// Import CSS
-import "../style/Dashboard.css";
-
 // Components
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
+
+// CSS
+import "../style/Dashboard.css";
 
 const MetricCard = ({ title, value, change, color, icon }) => (
   <motion.div whileHover={{ y: -5 }} className="metric-card">
@@ -21,11 +21,12 @@ const MetricCard = ({ title, value, change, color, icon }) => (
       <h2 className="metric-value">{value}</h2>
       <span style={{ color, fontSize: "13px", fontWeight: "bold" }}>{change}</span>
     </div>
-    <div style={{ height: "4px", width: "100%", background: "#1e293b", borderRadius: "2px", overflow: "hidden" }}>
+    <div className="progress-bar-bg">
       <motion.div 
         initial={{ width: 0 }} 
         animate={{ width: "75%" }} 
-        style={{ height: "100%", background: color }} 
+        className="progress-bar-fill"
+        style={{ background: color }} 
       />
     </div>
   </motion.div>
@@ -35,7 +36,7 @@ const PayloadAnalysis = ({ payload }) => (
   <div className="rule-section">
     <div className="card-header">
       <span>{`</> SECURITY_THREAT_ANALYSIS`}</span>
-      <span style={{ color: "#4ade80" }}>AI VERIFIED</span>
+      <span className="ai-badge">AI VERIFIED</span>
     </div>
     <pre className="code-block">
 {`// Protocol: HTTPS/TLS 1.3
@@ -53,6 +54,7 @@ const PayloadAnalysis = ({ payload }) => (
 
 function Dashboard() {
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // منيو الموبايل
   const [stats, setStats] = useState({
     totalAttacks: 15000,
     successfulAttacks: 0,
@@ -89,7 +91,7 @@ function Dashboard() {
 
   if (loading) {
     return (
-      <div className="page-wrapper" style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <div className="loading-screen">
         <h2 style={{ color: '#3b82f6', fontFamily: 'monospace' }}>INITIALIZING SYSTEM...</h2>
       </div>
     );
@@ -98,16 +100,22 @@ function Dashboard() {
   return (
     <div className="page-wrapper">
       <Navbar />
-      <div className="dashboard-container">
-        <Sidebar />
+      
+      {/* زرار المنيو العائم للموبايل */}
+      <button className="mobile-menu-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        {isMenuOpen ? "✕" : "☰"}
+      </button>
 
-        <main className="dashboard-main">
+      <div className="dashboard-container">
+        <Sidebar isOpen={isMenuOpen} />
+
+        <main className={`dashboard-main ${isMenuOpen ? 'blur-effect' : ''}`} onClick={() => setIsMenuOpen(false)}>
           <nav className="breadcrumbs">
             Main Console › Analytics › <span style={{ color: "#fff" }}>Security_Stream</span>
           </nav>
 
-          <header className="dash-header flex-between">
-            <div>
+          <header className="dash-header">
+            <div className="header-info">
               <div className="flex-center-gap">
                 <h1 className="dash-title">Intelligence Overview</h1>
                 <span className="live-badge">LIVE</span>
@@ -133,10 +141,9 @@ function Dashboard() {
               <div className="precision-card">
                 <p className="small-title">THREAT RATIO</p>
                 <div className="circle-box">
-                   {/* الدائرة الجرافيك */}
                    <svg width="100" height="100">
                       <circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" strokeWidth="6" />
-                      <circle cx="50" cy="50" r="45" fill="none" stroke="#3b82f6" strokeWidth="6" strokeDasharray="283" strokeDashoffset={283 - (283 * (100 - stats.successRate) / 100)} style={{ transition: '1s' }} />
+                      <circle cx="50" cy="50" r="45" fill="none" stroke="#3b82f6" strokeWidth="6" strokeDasharray="283" strokeDashoffset={283 - (283 * (100 - stats.successRate) / 100)} />
                    </svg>
                    <div className="circle-text">
                       <span className="secure-percent">{100 - stats.successRate}%</span>
@@ -145,8 +152,8 @@ function Dashboard() {
               </div>
 
               <div className="action-card">
-                <button className="primary-btn" style={{ width: '100%' }}>Export Logs</button>
-                <button className="secondary-btn" style={{ width: '100%' }}>AI Settings</button>
+                <button className="blue-action-btn">Export Logs</button>
+                <button className="dark-action-btn">AI Settings</button>
               </div>
             </aside>
           </div>

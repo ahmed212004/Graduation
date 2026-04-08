@@ -1,15 +1,13 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import "../style/Sidebar.css"; // استدعاء ملف الستايل
+import "../style/Sidebar.css";
 
-function Sidebar() {
+function Sidebar({ isOpen }) {
   const location = useLocation();
-
-  // دالة مساعدة عشان نعرف لو اللينك هو الصفحة الحالية
   const isActive = (path) => location.pathname === path;
 
   return (
-    <div className="sidebar">
+    <div className={`sidebar ${isOpen ? "open" : ""}`}>
       <h2 className="sidebar-logo">STRIKE DEFENDER</h2>
 
       <div className="sidebar-divider">CORE MODULES</div>
@@ -35,12 +33,8 @@ function Sidebar() {
 
         <div className="sidebar-divider">ADMINISTRATION</div>
 
-        <li className="sidebar-item">
-          <span className="sidebar-icon">📋</span> System Logs
-        </li>
-        <li className="sidebar-item">
-          <span className="sidebar-icon">⚙️</span> Settings
-        </li>
+        <li className="sidebar-item"><span className="sidebar-icon">📋</span> System Logs</li>
+        <li className="sidebar-item"><span className="sidebar-icon">⚙️</span> Settings</li>
       </ul>
     </div>
   );
