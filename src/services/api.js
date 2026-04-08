@@ -2,7 +2,7 @@ import axios from "axios";
 
 // 🔗 Base API
 const api = axios.create({
-  baseURL: "http://strike-defender-v1.runasp.net/",
+  baseURL: "https://strike-defender-v1.runasp.net/",
 });
 
 // ✅ Request Interceptor (يبعت التوكن مع كل request)
