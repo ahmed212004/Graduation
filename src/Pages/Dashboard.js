@@ -62,7 +62,6 @@ function Dashboard() {
     successRate: 0,
     latestPayload: "Waiting for data...",
   });
-  const [loading, setLoading] = useState(true);
 
   const fetchDashboardData = useCallback(async () => {
     try {
