@@ -1,0 +1,88 @@
+.sidebar {
+  width: 240px;
+  background: #020617;
+  color: #fff;
+  padding: 20px;
+  border-right: 1px solid #1e293b;
+  height: calc(100vh - 70px); /* يطرح طول النافبار */
+  position: fixed;
+  top: 70px; /* يبدأ بعد النافبار بـ 70px */
+  left: 0;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  transition: transform 0.3s ease-in-out;
+}
+
+.sidebar-logo {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #3b82f6;
+  letter-spacing: 2px;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 4px;
+}
+
+.sidebar-divider {
+  font-size: 10px;
+  color: #475569;
+  font-weight: bold;
+  margin: 20px 0 10px 10px;
+  letter-spacing: 1px;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.sidebar-icon {
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.sidebar-item {
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+  font-size: 13px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.sidebar-item.active {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  font-weight: bold;
+  border-left: 3px solid #3b82f6;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%); /* إخفاء السايدبار في الشاشات الصغيرة */
+  }
+  
+  /* لو عايز السايدبار يظهر لما تضغط على زرار (اختياري) */
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
