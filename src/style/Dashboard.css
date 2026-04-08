@@ -80,14 +80,50 @@ html, body {
 .action-card { display: flex; flexDirection: column; gap: 12px; margin-top: 25px; }
 
 /* --- Responsive (Mobile) --- */
-@media (max-width: 1024px) {
-  .dashboard-main { margin-left: 0; padding: 100px 20px 20px 20px; }
-  .content-grid { grid-template-columns: 1fr; }
-}
-
+/* --- 1. إصلاح الهيدر والزراير للموبايل --- */
 @media (max-width: 768px) {
-  .dash-header { text-align: center; }
-  .flex-center-gap { justify-content: center; }
-  .action-buttons { justify-content: center; }
-  .metric-value { font-size: 28px; }
+    .dash-header {
+        display: flex;
+        flex-direction: column; /* يخلي العنوان فوق الزراير */
+        align-items: flex-start; /* محاذاة لليسار */
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .action-buttons {
+        width: 100%; /* الحاوية تاخد العرض كامل */
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap; /* عشان لو الموبايل صغير جداً الزراير تنزل تحت بعض */
+    }
+
+    .primary-btn, .secondary-btn {
+        flex: 1; /* الزراير تتوزع بالتساوي */
+        min-width: 120px; /* يمنع الكرمشة */
+        text-align: center;
+        padding: 12px 5px !important;
+        font-size: 14px;
+    }
+
+    /* --- 2. إصلاح الكروت والمسافات --- */
+    .dashboard-main {
+        padding: 90px 15px 20px 15px !important; /* بادنج علوي عشان النافبار وبادنج جانبي للموبايل */
+        margin-left: 0 !important; /* إلغاء مساحة السايدبار تماماً */
+        width: 100% !important;
+    }
+
+    .top-grid {
+        grid-template-columns: 1fr !important; /* كارت واحد في كل صف */
+        gap: 20px !important;
+    }
+
+    .metric-card {
+        width: 100% !important; 
+        box-sizing: border-box; /* يضمن إن البادنج ميبوظش المقاس */
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr !important; /* التحليل والدايرة يبقوا تحت بعض */
+        gap: 20px;
+    }
 }

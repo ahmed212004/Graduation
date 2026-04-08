@@ -1,0 +1,135 @@
+.navbar {
+  position: fixed; /* تغيير من absolute لـ fixed لضمان الثبات */
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 60px; /* تقليل الـ padding شوية */
+  background: rgba(2, 6, 23, 0.8); /* خلفية شفافة غامقة */
+  backdrop-filter: blur(10px); /* تأثير زجاجي */
+  color: #fff;
+  z-index: 1000;
+  font-family: "Inter", sans-serif;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.navbar-logo {
+  font-weight: 700;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.logo-icon {
+  color: #a855f7;
+  font-size: 22px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 35px;
+  fontSize: 14px;
+}
+
+.navbar-link {
+  cursor: pointer;
+  color: #94a3b8;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.navbar-link:hover {
+  color: #fff;
+}
+
+.navbar-link.active {
+  color: #a855f7;
+  font-weight: 600;
+}
+
+.navbar-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.btn-login {
+  background: transparent;
+  border: 1px solid #334155;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background: #9333ea;
+  border: none;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.profile-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.navbar-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 2px solid #a855f7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.2s;
+}
+
+.navbar-logout {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* --- RESPONSIVE (هنا حل المشكلة اللي في الصورة) --- */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 15px 20px;
+  }
+  .navbar-links {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-links {
+    display: none; /* إخفاء اللينكات في الموبايل عشان ميتداخلش الكلام */
+  }
+  
+  .navbar-logo {
+    font-size: 16px;
+  }
+  
+  .btn-primary, .btn-login {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
