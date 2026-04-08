@@ -27,7 +27,7 @@ function Sidebar({ isOpen }) {
 
         <Link to="/prompt-testing" className="sidebar-link">
           <li className={`sidebar-item ${isActive("/prompt-testing") ? "active" : ""}`}>
-            <span className="sidebar-icon">🧪</span> AI Playground
+            <span className="sidebar-icon">🧪</span>Testing Prompt
           </li>
         </Link>
 
