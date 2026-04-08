@@ -1,58 +1,70 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { motion } from "framer-motion";
 
+// 1. مكوّن سطر الجدول (لزيادة الوضوح)
+const AttackRow = ({ attack }) => (
+  <motion.tr 
+    style={styles.tr}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+  >
+    <td style={styles.td}><span style={styles.techBadge}>{attack.technique}</span></td>
+    <td style={styles.td}><div style={styles.payloadBox}>{attack.payload}</div></td>
+    <td style={styles.td}>
+      <span style={attack.statusCode === 200 ? styles.codeSuccess : styles.codeOther}>
+        {attack.statusCode}
+      </span>
+    </td>
+    <td style={styles.td}>{attack.executionTimeMs?.toFixed(2)} ms</td>
+    <td style={styles.td}><span style={styles.resultBadge}>{attack.result}</span></td>
+  </motion.tr>
+);
+
 function SuccessfulAttacks() {
   const [attacks, setAttacks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // 👇 States الخاصة بالـ Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10; // عدد العناصر في كل صفحة
+  const pageSize = 10;
 
-  useEffect(() => {
-    fetchAttacks();
-  }, [currentPage]); // 👈 إعادة الطلب كل ما رقم الصفحة يتغير
-
-  const fetchAttacks = async () => {
+  // استخدام useCallback لمنع الـ Warning الخاص بالـ Dependencies
+  const fetchAttacks = useCallback(async () => {
     try {
       setLoading(true);
-      // 👇 بنبعت الـ currentPage والـ pageSize في الـ URL
-      const response = await api.get(
+      const { data } = await api.get(
         `/api/Attacks/Get_Successful_Attacks?PageNumber=${currentPage}&PageSize=${pageSize}`
       );
       
-      if (response.data && Array.isArray(response.data.items)) {
-        setAttacks(response.data.items);
-      } else {
-        setAttacks([]);
-      }
+      setAttacks(data?.items || []);
     } catch (err) {
-      setError("Connection lost. Retrying encryption...");
+      console.error("Fetch Error:", err);
       setAttacks([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, pageSize]);
+
+  useEffect(() => {
+    fetchAttacks();
+  }, [fetchAttacks]);
 
   return (
     <div style={styles.pageWrapper}>
       <Navbar />
       <div style={styles.container}>
         <Sidebar />
-        <div style={styles.main}>
-          <div style={styles.header}>
+        <main style={styles.main}>
+          <header style={styles.header}>
             <div>
               <h1 style={styles.title}>Breach Intelligence Log</h1>
               <p style={styles.subtitle}>Analyzing successfully executed payloads and techniques</p>
             </div>
             <div style={styles.dangerBadge}>LIVE FEED: PAGE {currentPage}</div>
-          </div>
+          </header>
 
-          <div style={styles.tableContainer}>
+          <section style={styles.tableContainer}>
             {loading ? (
               <div style={styles.loadingState}>INTERCEPTING DATA PACKETS...</div>
             ) : (
@@ -60,41 +72,26 @@ function SuccessfulAttacks() {
                 <table style={styles.table}>
                   <thead>
                     <tr>
-                      <th style={styles.th}>TECHNIQUE</th>
-                      <th style={styles.th}>PAYLOAD</th>
-                      <th style={styles.th}>STATUS CODE</th>
-                      <th style={styles.th}>EXECUTION TIME</th>
-                      <th style={styles.th}>RESULT</th>
+                      {["TECHNIQUE", "PAYLOAD", "STATUS CODE", "EXECUTION TIME", "RESULT"].map(head => (
+                        <th key={head} style={styles.th}>{head}</th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {attacks.map((attack) => (
-                      <motion.tr 
-                        key={attack.attackId} 
-                        style={styles.tr}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                      >
-                        <td style={styles.td}><span style={styles.techBadge}>{attack.technique}</span></td>
-                        <td style={styles.td}><div style={styles.payloadBox}>{attack.payload}</div></td>
-                        <td style={styles.td}>
-                          <span style={attack.statusCode === 200 ? styles.codeSuccess : styles.codeOther}>
-                            {attack.statusCode}
-                          </span>
-                        </td>
-                        <td style={styles.td}>{attack.executionTimeMs.toFixed(2)} ms</td>
-                        <td style={styles.td}><span style={styles.resultBadge}>{attack.result}</span></td>
-                      </motion.tr>
-                    ))}
+                    {attacks.length > 0 ? (
+                      attacks.map((attack) => <AttackRow key={attack.attackId} attack={attack} />)
+                    ) : (
+                      <tr><td colSpan="5" style={{...styles.td, textAlign: 'center'}}>No breach data found.</td></tr>
+                    )}
                   </tbody>
                 </table>
 
-                {/* 👇 أزرار الـ Pagination */}
+                {/* Pagination UI */}
                 <div style={styles.paginationContainer}>
                   <button 
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
                     disabled={currentPage === 1}
-                    style={{...styles.pageButton, opacity: currentPage === 1 ? 0.5 : 1}}
+                    style={{...styles.pageButton, opacity: currentPage === 1 ? 0.4 : 1}}
                   >
                     PREVIOUS
                   </button>
@@ -102,48 +99,27 @@ function SuccessfulAttacks() {
                   <span style={styles.pageIndicator}>NODE {currentPage}</span>
                   
                   <button 
-                    onClick={() => setCurrentPage(prev => prev + 1)}
-                    disabled={attacks.length < pageSize} // لو الداتا اللي جاية أقل من الـ pageSize يبقى مفيش صفحة تانية
-                    style={{...styles.pageButton, opacity: attacks.length < pageSize ? 0.5 : 1}}
+                    onClick={() => setCurrentPage(p => p + 1)}
+                    disabled={attacks.length < pageSize}
+                    style={{...styles.pageButton, opacity: attacks.length < pageSize ? 0.4 : 1}}
                   >
                     NEXT
                   </button>
                 </div>
               </>
             )}
-          </div>
-        </div>
+          </section>
+        </main>
       </div>
     </div>
   );
 }
 
+// تم الحفاظ على الاستايلات كما هي مع بعض التحسينات البسيطة
 const styles = {
-  // ... الاستايلات القديمة زي ما هي ...
-pageWrapper: { 
-    minHeight: "100vh", 
-    background: "#020617", 
-    color: "#fff",
-    display: "flex", 
-    flexDirection: "column",
-  },
-
-  container: { 
-    display: "flex", 
-    flex: 1, 
-    // 👈 أهم سطر: السايدبار والـ Main هيبدأوا بعد النافبار بـ 70px
-    marginTop: "70px", 
-  },
-
-  main: { 
-    flex: 1, 
-    // 👈 لو عرض السايدبار 220px، يبقى الـ margin هنا 220px
-    marginLeft: "220px", 
-    padding: "30px 40px",
-    width: "calc(100% - 220px)", 
-    minHeight: "calc(100vh - 70px)",
-    boxSizing: "border-box",
-  },
+  pageWrapper: { minHeight: "100vh", background: "#020617", color: "#fff", display: "flex", flexDirection: "column" },
+  container: { display: "flex", flex: 1, marginTop: "70px" },
+  main: { flex: 1, marginLeft: "220px", padding: "30px 40px", width: "calc(100% - 220px)", minHeight: "calc(100vh - 70px)", boxSizing: "border-box" },
   header: { display: "flex", justifyContent: "space-between", marginBottom: "30px" },
   title: { fontSize: "24px", color: "#f87171", fontWeight: "bold", letterSpacing: "1px" },
   subtitle: { color: "#64748b", fontSize: "14px" },
@@ -159,35 +135,9 @@ pageWrapper: {
   codeOther: { color: "#fbbf24" },
   resultBadge: { background: "#991b1b", color: "#fff", padding: "2px 8px", borderRadius: "4px", fontSize: "10px", fontWeight: "bold" },
   loadingState: { padding: "100px", textAlign: "center", color: "#3b82f6", letterSpacing: "3px" },
-
-  // 👇 ستايلات الـ Pagination الجديدة
-  paginationContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "20px",
-    gap: "20px",
-    background: "rgba(0, 0, 0, 0.2)",
-    borderTop: "1px solid rgba(255,255,255,0.05)"
-  },
-  pageButton: {
-    background: "#1e293b",
-    color: "#3b82f6",
-    border: "1px solid #3b82f6",
-    padding: "8px 20px",
-    borderRadius: "4px",
-    fontSize: "12px",
-    fontWeight: "bold",
-    cursor: "pointer",
-    letterSpacing: "1px",
-    transition: "0.3s"
-  },
-  pageIndicator: {
-    color: "#fff",
-    fontSize: "14px",
-    fontWeight: "bold",
-    fontFamily: "monospace"
-  }
+  paginationContainer: { display: "flex", justifyContent: "center", alignItems: "center", padding: "20px", gap: "20px", background: "rgba(0, 0, 0, 0.2)", borderTop: "1px solid rgba(255,255,255,0.05)" },
+  pageButton: { background: "#1e293b", color: "#3b82f6", border: "1px solid #3b82f6", padding: "8px 20px", borderRadius: "4px", fontSize: "12px", fontWeight: "bold", cursor: "pointer", letterSpacing: "1px", transition: "0.3s" },
+  pageIndicator: { color: "#fff", fontSize: "14px", fontWeight: "bold", fontFamily: "monospace" }
 };
 
 export default SuccessfulAttacks;
