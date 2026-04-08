@@ -15,18 +15,17 @@ const MetricCard = ({ title, value, change, color, icon }) => (
   <motion.div whileHover={{ y: -5 }} className="metric-card">
     <div className="flex-between">
       <span className="metric-title">{title}</span>
-      <span>{icon}</span>
+      <span style={{ fontSize: "20px" }}>{icon}</span>
     </div>
     <div className="metric-value-box">
       <h2 className="metric-value">{value}</h2>
-      <span style={{ color, fontSize: "12px" }}>{change}</span>
+      <span style={{ color, fontSize: "13px", fontWeight: "bold" }}>{change}</span>
     </div>
-    <div className="progress-bar-bg">
+    <div style={{ height: "4px", width: "100%", background: "#1e293b", borderRadius: "2px", overflow: "hidden" }}>
       <motion.div 
         initial={{ width: 0 }} 
-        animate={{ width: "70%" }} 
-        className="progress-bar-fill"
-        style={{ background: color }} 
+        animate={{ width: "75%" }} 
+        style={{ height: "100%", background: color }} 
       />
     </div>
   </motion.div>
@@ -35,17 +34,17 @@ const MetricCard = ({ title, value, change, color, icon }) => (
 const PayloadAnalysis = ({ payload }) => (
   <div className="rule-section">
     <div className="card-header">
-      <span>{`</> LATEST SUCCESSFUL PAYLOAD ANALYSIS`}</span>
-      <span className="ai-badge">RECOGNIZED BY AI</span>
+      <span>{`</> SECURITY_THREAT_ANALYSIS`}</span>
+      <span style={{ color: "#4ade80" }}>AI VERIFIED</span>
     </div>
     <pre className="code-block">
-{`// Trace ID: SD-${Math.floor(Math.random() * 9000) + 1000}
-// Type: Injection Attempt
+{`// Protocol: HTTPS/TLS 1.3
+// Origin: Remote_Inbound
 {
-  "status": "PASSED",
+  "status": "DETECTED",
   "payload": "${payload}",
-  "risk_score": 0.94,
-  "action": "logged",
+  "risk_score": 0.98,
+  "mitigation": "Isolated",
   "engine": "Aegis_AI_v2.4"
 }`}
     </pre>
@@ -58,7 +57,7 @@ function Dashboard() {
     totalAttacks: 15000,
     successfulAttacks: 0,
     successRate: 0,
-    latestPayload: "Waiting for data...",
+    latestPayload: "Loading...",
   });
   const [loading, setLoading] = useState(true);
 
@@ -66,18 +65,17 @@ function Dashboard() {
     try {
       setLoading(true);
       const response = await api.get("/api/Attacks/Get_Successful_Attacks?PageNumber=1&PageSize=1");
-      const successCount = response.data.totalCount || response.data.items?.length || 0;
-      const totalAttempted = 15000; 
-      const rate = ((successCount / totalAttempted) * 100).toFixed(2);
+      const successCount = response.data.totalCount || 0;
+      const rate = ((successCount / 15000) * 100).toFixed(2);
 
       setStats({
-        totalAttacks: totalAttempted,
+        totalAttacks: 15000,
         successfulAttacks: successCount,
         successRate: rate,
-        latestPayload: response.data.items?.[0]?.payload || "No recent breaches",
+        latestPayload: response.data.items?.[0]?.payload || "System Clear",
       });
     } catch (err) {
-      console.error("Dashboard Error:", err);
+      console.error("API Error:", err);
     } finally {
       setLoading(false);
     }
@@ -85,17 +83,14 @@ function Dashboard() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login", { replace: true });
-    } else {
-      fetchDashboardData();
-    }
+    if (!token) navigate("/login");
+    else fetchDashboardData();
   }, [navigate, fetchDashboardData]);
 
   if (loading) {
     return (
-      <div className="loading-screen" style={{ background: '#020617', color: '#3b82f6', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'monospace' }}>
-        AUTHENTICATING SYSTEM METRICS...
+      <div className="page-wrapper" style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <h2 style={{ color: '#3b82f6', fontFamily: 'monospace' }}>INITIALIZING SYSTEM...</h2>
       </div>
     );
   }
@@ -108,44 +103,27 @@ function Dashboard() {
 
         <main className="dashboard-main">
           <nav className="breadcrumbs">
-            Strike Defender AI › Security Overview › <span style={{ color: "#fff" }}>Analytics</span>
+            Main Console › Analytics › <span style={{ color: "#fff" }}>Security_Stream</span>
           </nav>
 
-          <header className="dash-header">
+          <header className="dash-header flex-between">
             <div>
               <div className="flex-center-gap">
                 <h1 className="dash-title">Intelligence Overview</h1>
-                <span className="live-badge">LIVE MONITORING</span>
+                <span className="live-badge">LIVE</span>
               </div>
-              <p className="dash-subtitle">AI-driven analysis of system infiltrations.</p>
+              <p className="dash-subtitle">Real-time AI monitoring and threat detection.</p>
             </div>
             <div className="action-buttons">
-              <button className="secondary-btn" onClick={fetchDashboardData}>Refresh</button>
-              <button className="primary-btn" onClick={() => navigate("/successful-attacks")}>View All</button>
+              <button className="secondary-btn" onClick={fetchDashboardData}>Sync Data</button>
+              <button className="primary-btn" onClick={() => navigate("/successful-attacks")}>Deep Inspect</button>
             </div>
           </header>
 
           <section className="top-grid">
-            <MetricCard 
-              title="TOTAL ATTACKS" 
-              value={<CountUp end={stats.totalAttacks} separator="," />} 
-              change="Detected by WAF" 
-              color="#3b82f6" 
-            />
-            <MetricCard 
-              title="SUCCESSFUL BREACHES" 
-              value={<CountUp end={stats.successfulAttacks} />} 
-              change="Bypassed AI" 
-              color="#ef4444" 
-              icon="🚨" 
-            />
-            <MetricCard 
-              title="SUCCESS RATE" 
-              value={`${stats.successRate}%`} 
-              change={stats.successRate > 5 ? "Critical" : "Secure"} 
-              color={stats.successRate > 5 ? "#ef4444" : "#10b981"} 
-              icon="📉" 
-            />
+            <MetricCard title="TOTAL ANALYZED" value={<CountUp end={stats.totalAttacks} />} change="WAF Monitoring" color="#3b82f6" icon="📡" />
+            <MetricCard title="BREACHES FOUND" value={<CountUp end={stats.successfulAttacks} />} change="Action Required" color="#ef4444" icon="⚠️" />
+            <MetricCard title="INTEGRITY SCORE" value={`${100 - stats.successRate}%`} change="System Health" color="#10b981" icon="🛡️" />
           </section>
 
           <div className="content-grid">
@@ -153,29 +131,22 @@ function Dashboard() {
 
             <aside className="side-column">
               <div className="precision-card">
-                <p className="small-title">SYSTEM INTEGRITY</p>
+                <p className="small-title">THREAT RATIO</p>
                 <div className="circle-box">
-                  <svg width="120" height="120">
-                    <circle cx="60" cy="60" r="50" fill="transparent" stroke="#1e293b" strokeWidth="8" />
-                    <motion.circle 
-                      cx="60" cy="60" r="50" fill="transparent" stroke="#10b981" strokeWidth="8" 
-                      strokeDasharray="314" 
-                      animate={{ strokeDashoffset: 314 * (stats.successRate / 100) }}
-                      transition={{ duration: 2 }}
-                      style={{ rotate: -90, transformOrigin: "50% 50%" }}
-                    />
-                  </svg>
-                  <div className="circle-text">
-                    <span className="secure-percent">{100 - stats.successRate}%</span>
-                    <span className="secure-label">SECURE</span>
-                  </div>
+                   {/* الدائرة الجرافيك */}
+                   <svg width="100" height="100">
+                      <circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" strokeWidth="6" />
+                      <circle cx="50" cy="50" r="45" fill="none" stroke="#3b82f6" strokeWidth="6" strokeDasharray="283" strokeDashoffset={283 - (283 * (100 - stats.successRate) / 100)} style={{ transition: '1s' }} />
+                   </svg>
+                   <div className="circle-text">
+                      <span className="secure-percent">{100 - stats.successRate}%</span>
+                   </div>
                 </div>
               </div>
 
               <div className="action-card">
-                <p className="small-title">QUICK ACTIONS</p>
-                <button className="blue-action-btn">Generate Report</button>
-                <button className="dark-action-btn">Update AI Models</button>
+                <button className="primary-btn" style={{ width: '100%' }}>Export Logs</button>
+                <button className="secondary-btn" style={{ width: '100%' }}>AI Settings</button>
               </div>
             </aside>
           </div>
