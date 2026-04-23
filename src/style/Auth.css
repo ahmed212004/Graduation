@@ -1,176 +1,365 @@
-/* --- Auth Pages Container --- */
+/* --- Auth Page Wrapper --- */
 .auth-page-wrapper {
   min-height: 100vh;
+  background: #020617; /* لون الخلفية الداكن الأساسي */
   display: flex;
   flex-direction: column;
-  background-color: #050914;
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), 
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 40px 40px;
-  font-family: 'Inter', sans-serif;
 }
 
+/* --- Auth Container --- */
 .auth-container {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 80px 20px; /* بادنج جانبي للموبايل */
+  padding: 40px 20px;
 }
 
 /* --- Header Section --- */
 .auth-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 }
 
 .auth-logo-box {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   background: rgba(59, 130, 246, 0.1);
   border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: 16px;
+  border-radius: 12px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  margin: 0 auto 20px auto;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+  justify-content: center;
+  margin: 0 auto 16px;
 }
 
 .auth-brand-title {
-  color: #ffffff;
+  color: #fff;
   font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  margin: 0 0 8px 0;
-}
-
-.auth-brand-subtitle {
-  color: #3b82f6;
-  font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: 2px;
   margin: 0;
 }
 
-/* --- Auth Card (The Box) --- */
+.auth-brand-subtitle {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-top: 8px;
+}
+
+/* --- Auth Card --- */
 .auth-card {
-  background: rgba(10, 15, 30, 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  padding: 40px;
-  border-radius: 16px;
   width: 100%;
   max-width: 420px;
-  box-sizing: border-box;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
+/* --- Error Box (المطور) --- */
 .auth-error-box {
-  background: rgba(220, 38, 38, 0.1);
-  border: 1px solid rgba(220, 38, 38, 0.5);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-left: 4px solid #ef4444;
   color: #ef4444;
-  padding: 12px;
+  padding: 12px 16px;
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   font-size: 13px;
-  text-align: center;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  animation: shake 0.4s ease-in-out;
 }
 
-/* --- Inputs --- */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
+}
+
+/* --- Input Groups --- */
 .auth-input-group {
-  margin-bottom: 24px;
-  text-align: left;
+  margin-bottom: 20px;
 }
 
 .auth-label {
   display: block;
   color: #94a3b8;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 1px;
   margin-bottom: 8px;
+  text-transform: uppercase;
 }
 
 .auth-input-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: 0.3s;
-}
-
-.auth-input-wrapper:focus-within {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px #3b82f6;
 }
 
 .auth-icon {
-  color: #64748b;
-  padding: 0 15px;
+  position: absolute;
+  left: 12px;
+  color: #475569;
   display: flex;
   align-items: center;
 }
 
 .auth-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: #ffffff;
-  padding: 14px 14px 14px 0;
+  width: 100%;
+  background: #020617;
+  border: 1px solid #1e293b;
+  color: #fff;
+  padding: 12px 12px 12px 40px;
+  border-radius: 8px;
   font-size: 14px;
+  transition: all 0.2s;
   outline: none;
 }
 
-/* --- Button --- */
-.auth-submit-btn {
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(to right, #2563eb, #3b82f6);
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: 0.3s;
+.auth-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
-.auth-submit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.5);
+/* حالة الخطأ في الـ Input */
+.auth-input-error {
+  border-color: rgba(239, 68, 68, 0.5) !important;
+  background: rgba(239, 68, 68, 0.02) !important;
+}
+
+/* --- Buttons --- */
+.auth-submit-btn {
+  width: 100%;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 24px;
+}
+
+.auth-submit-btn:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
 }
 
 .auth-submit-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* --- Footer Link --- */
+/* --- Footer & Links --- */
 .auth-card-footer {
-  margin-top: 35px;
+  margin-top: 24px;
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid #1e293b;
   padding-top: 20px;
 }
 
-.auth-link-text { color: #94a3b8; font-size: 13px; }
-.auth-link { color: #ffffff; font-weight: 600; cursor: pointer; text-decoration: none; margin-left: 5px; }
+.auth-link-text {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+}
 
-/* --- Responsive --- */
+.auth-link {
+  color: #3b82f6;
+  margin-left: 6px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.auth-link:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+/* --- Mobile Responsiveness --- */
 @media (max-width: 480px) {
   .auth-card {
-    padding: 30px 20px;
+    padding: 24px;
+    border: none;
+    background: transparent;
+    box-shadow: none;
   }
+  
   .auth-brand-title {
     font-size: 20px;
   }
+}
+
+
+/* --- Password Toggle Button --- */
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: color 0.2s;
+  z-index: 10; /* عشان تظهر فوق الـ input */
+}
+
+.password-toggle-btn:hover {
+  color: #3b82f6; /* لون العين يتغير لما تقرب منها */
+}
+
+/* تعديل بسيط للـ input عشان الكلام ما يجيش تحت العين */
+.auth-input {
+  padding-right: 40px !important; 
+}
+
+/* --- قسم رفع الصورة (Complete Profile) --- */
+
+/* الحاوية الأساسية لمنطقة الرفع */
+.image-upload-zone {
+  width: 100%;
+  height: 200px; /* ارتفاع ثابت ومنطقي لمنطقة الرفع */
+  border: 2px dashed rgba(59, 130, 246, 0.3); /* حدود منقطة زرقاء خفيفة */
+  border-radius: 12px;
+  background-color: rgba(15, 23, 42, 0.5); /* خلفية داكنة وشفافة */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative; /* مهم عشان الطبقة اللي فوق الصورة */
+  overflow: hidden; /* عشان الصورة متطلعش بره الحواف المنحنية */
+  margin-top: 10px;
+}
+
+/* تأثير عند تمرير الماوس فوق منطقة الرفع */
+.image-upload-zone:hover {
+  border-color: rgba(59, 130, 246, 0.8);
+  background-color: rgba(15, 23, 42, 0.8);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+/* ستايل منطقة الرفع لما يكون فيها صورة خلاص */
+.image-upload-zone.has-image {
+  border: 2px solid rgba(59, 130, 246, 0.5); /* حدود متصلة */
+  background-color: transparent;
+}
+
+/* ستايل في حالة وجود خطأ ولم يتم اختيار صورة */
+.image-upload-zone.zone-error {
+  border-color: #ef4444; /* حدود حمراء */
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+/* --- الحل السحري لحجم الصورة --- */
+.profile-final-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* ⚠️ أهم سطر: بيخلي الصورة تملأ الحاوية وتقص الزوايد بدون ما تمطها */
+  object-position: center; /* بيخلي نص الصورة هو اللي باين */
+  border-radius: 10px; /* أصغر شوية من الحاوية عشان تبان شيك */
+  display: block;
+}
+
+/* الطبقة السوداء الشفافة اللي بتظهر فوق الصورة لما تترفع */
+.preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0); /* مخفية في البداية */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.3s ease;
+  border-radius: 10px;
+}
+
+/* لما نعدي الماوس فوق الصورة المرفوعة، الطبقة تسود ونظهر زرار التغيير */
+.image-upload-zone.has-image:hover .preview-overlay {
+  background: rgba(0, 0, 0, 0.7); /* سواد شفاف */
+}
+
+/* زرار "Change Photo" اللي جوه الطبقة */
+.change-photo-btn {
+  color: white;
+  background: rgba(59, 130, 246, 0.8);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  opacity: 0; /* مخفي */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(10px); /* نازل تحت شوية */
+}
+
+/* نظهر الزرار لما نعدي الماوس فوق الحاوية */
+.image-upload-zone.has-image:hover .change-photo-btn {
+  opacity: 1;
+  transform: translateY(0); /* يرجع لمكانه الطبيعي */
+}
+
+/* تنسيق النصوص والأيقونات في حالة "لا يوجد صورة" */
+.upload-placeholder-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.upload-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+  opacity: 0.7;
+}
+
+.upload-text {
+  font-size: 14px;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.upload-hint {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 5px;
+}
+
+/* إخفاء الـ input الفعلي */
+.file-input-hidden {
+  display: none;
+}
+
+/* عرض اسم الملف تحت الحاوية */
+.file-name-display {
+  color: #94a3b8;
+  font-size: 11px;
+  margin-top: 8px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* قص الاسم لو طويل قوي */
+  max-width: 100%;
 }

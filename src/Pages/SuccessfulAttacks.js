@@ -105,7 +105,7 @@ function SuccessfulAttacks() {
                     PREVIOUS
                   </button>
                   
-                  <span style={{ fontFamily: "monospace", fontWeight: "bold" }}>NODE {currentPage}</span>
+                  <span style={{ fontFamily: "monospace", fontWeight: "bold" }}>Page {currentPage}</span>
                   
                   <button 
                     className="page-btn"

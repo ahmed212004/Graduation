@@ -2,39 +2,74 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import "../style/Sidebar.css";
 
-function Sidebar({ isOpen }) {
+function Sidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
+  
+  // دالة لمعرفة الرابط النشط لتغيير الستايل
   const isActive = (path) => location.pathname === path;
+
+  // دالة لإغلاق السايدبار عند الضغط على رابط (مفيدة جداً للموبايل)
+  const handleLinkClick = () => {
+    if (window.innerWidth <= 1024 && setIsOpen) {
+      setIsOpen(false);
+    }
+  };
 
   return (
     <div className={`sidebar ${isOpen ? "open" : ""}`}>
-      <h2 className="sidebar-logo">STRIKE DEFENDER</h2>
+      <div className="sidebar-header">
+        <h2 className="sidebar-logo">STRIKE DEFENDER</h2>
+        <div className="sidebar-tagline">SECURITY CORE V2.1</div>
+      </div>
 
       <div className="sidebar-divider">CORE MODULES</div>
 
       <ul className="sidebar-menu">
-        <Link to="/dashboard" className="sidebar-link">
+        {/* Dashboard */}
+        <Link to="/dashboard" className="sidebar-link" onClick={handleLinkClick}>
           <li className={`sidebar-item ${isActive("/dashboard") ? "active" : ""}`}>
             <span className="sidebar-icon">📊</span> Dashboard
           </li>
         </Link>
 
-        <Link to="/successful-attacks" className="sidebar-link">
+        {/* Successful Attacks */}
+        <Link to="/successful-attacks" className="sidebar-link" onClick={handleLinkClick}>
           <li className={`sidebar-item ${isActive("/successful-attacks") ? "active" : ""}`}>
             <span className="sidebar-icon">🚨</span> Successful Attacks
           </li>
         </Link>
 
-        <Link to="/prompt-testing" className="sidebar-link">
+        {/* Prompt Testing */}
+        <Link to="/prompt-testing" className="sidebar-link" onClick={handleLinkClick}>
           <li className={`sidebar-item ${isActive("/prompt-testing") ? "active" : ""}`}>
-            <span className="sidebar-icon">🧪</span>Testing Prompt
+            <span className="sidebar-icon">🧪</span> Testing Prompt
           </li>
         </Link>
 
+        
+
         <div className="sidebar-divider">ADMINISTRATION</div>
 
-        <li className="sidebar-item"><span className="sidebar-icon">📋</span> System Logs</li>
-        <li className="sidebar-item"><span className="sidebar-icon">⚙️</span> Settings</li>
+        {/* Manage Accounts (Admin Only) */}
+        <Link to="/admin/accounts" className="sidebar-link" onClick={handleLinkClick}>
+          <li className={`sidebar-item ${isActive("/admin/accounts") ? "active" : ""}`}>
+            <span className="sidebar-icon">👥</span> Manage Accounts
+          </li>
+        </Link>
+
+        {/* Profile */}
+        <Link to="/profile" className="sidebar-link" onClick={handleLinkClick}>
+          <li className={`sidebar-item ${isActive("/profile") ? "active" : ""}`}>
+            <span className="sidebar-icon">👤</span> My Profile
+          </li>
+        </Link>
+
+        {/* Initialize Identity / Complete Profile */}
+        <Link to="/complete-profile" className="sidebar-link" onClick={handleLinkClick}>
+          <li className={`sidebar-item ${isActive("/complete-profile") ? "active" : ""}`}>
+            <span className="sidebar-icon">🆔</span> Identity Setup
+          </li>
+        </Link>
       </ul>
     </div>
   );
