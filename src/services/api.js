@@ -1,65 +1,61 @@
 import axios from "axios";
 
-// 🔗 Base API
+// 🔗 Base API URL
+const BASE_URL = "https://strike-defender-v1.runasp.net/";
+
 const api = axios.create({
-  baseURL: "https://strike-defender-v1.runasp.net/",
+  baseURL: BASE_URL,
 });
 
-// ✅ Request Interceptor (يبعت التوكن مع كل request)
+// ✅ Request Interceptor
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// 🔥 Response Interceptor (handle refresh token)
+// 🔥 Response Interceptor
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // لو Unauthorized
+    // تشيك لو الـ error هو 401 (Unauthorized) والطلب ده مكررناش محاولته قبل كدة
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
+        const currentRefreshToken = localStorage.getItem("refreshToken");
 
-        // اطلب refresh token جديد
-        const res = await axios.post(
-          "http://strike-defender-v1.runasp.net/api/Authentication/refresh-token",
-          {
-            refreshToken: refreshToken,
-          }
-        );
+        // ⚠️ ملاحظة: استخدمنا axios العادي هنا مش api عشان ميبعتش الهيدر القديم "Bearer"
+        const res = await axios.post(`${BASE_URL}api/Authentication/refresh-token`, {
+          refreshToken: currentRefreshToken,
+        });
 
-        const newToken = res.data.token;
-        const newRefreshToken = res.data.refreshToken;
+        // استخراج التوكنز الجديدة (تأكد من مطابقة الأسماء للي راجع من الـ API عندك)
+        const { token, refreshToken } = res.data;
 
-        // خزّن الجديد
-        localStorage.setItem("token", newToken);
-        localStorage.setItem("refreshToken", newRefreshToken);
+        // ✅ تحديث الـ LocalStorage
+        localStorage.setItem("token", token);
+        localStorage.setItem("refreshToken", refreshToken);
 
-        // عدّل الهيدر
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        // ✅ تحديث الهيدر للطلب الحالي اللي فشل
+        originalRequest.headers.Authorization = `Bearer ${token}`;
 
-        // أعد تنفيذ الطلب
+        // ✅ إعادة تنفيذ الطلب الأصلي بالتوكن الجديد
         return api(originalRequest);
       } catch (err) {
-        console.log("Refresh Token Failed:", err);
+        console.error("Critical: Refresh Token Expired or Invalid", err);
 
-        // logout
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
-
-        window.location.href = "/";
+        // 🚨 لو الـ Refresh Token نفسه باظ.. Logout فوراً
+        localStorage.clear(); // أضمن بكتير من مسح عنصر عنصر
+        window.location.href = "/"; 
+        return Promise.reject(err);
       }
     }
 

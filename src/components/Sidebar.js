@@ -19,7 +19,6 @@ function Sidebar({ isOpen, setIsOpen }) {
     <div className={`sidebar ${isOpen ? "open" : ""}`}>
       <div className="sidebar-header">
         <h2 className="sidebar-logo">STRIKE DEFENDER</h2>
-        <div className="sidebar-tagline">SECURITY CORE V2.1</div>
       </div>
 
       <div className="sidebar-divider">CORE MODULES</div>

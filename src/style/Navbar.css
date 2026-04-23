@@ -137,7 +137,6 @@
 .navbar {
     width: 100%;
     height: 70px; /* ارتفاع ثابت */
-    position: sticky; /* يجعله يثبت عند السكرول لكن يحجز مكانه */
     top: 0;
     z-index: 1000;
     background: #0f172a;

@@ -3,12 +3,15 @@ import api from "../services/api";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { motion } from "framer-motion";
-import "../style/Admin.css";   // الستايل العام للداشبورد
-import "../style/Profile.css"; // الستايل الخاص بالبروفايل اللي عملناه فوق
+
+// الستايلات الخاصة بك
+import "../style/Admin.css"; 
+import "../style/Profile.css"; 
 
 function Profile() {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [imageBlob, setImageBlob] = useState(null); // تخزين رابط الصورة المؤقت
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -18,75 +21,100 @@ function Profile() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
+      // جلب بيانات البروفايل (التوكن يرسل تلقائياً عبر api.js)
       const response = await api.get("/api/Accounts/Get_Profile");
       setProfileData(response.data);
+
+      // إذا وجدنا رابط صورة، نقوم بجلبها بشكل منفصل بالتوكن
+      if (response.data.photoUrl) {
+        fetchSecureImage(response.data.photoUrl);
+      }
     } catch (err) {
-      console.error("Error fetching profile");
+      console.error("خطأ في جلب بيانات البروفايل:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  // دالة لجلب الصورة كـ Blob لتخطي مشاكل الـ Authorization
+  const fetchSecureImage = async (imageUrl) => {
+    try {
+      // نطلب الصورة من السيرفر كـ Blob (Binary Large Object)
+      const res = await api.get(imageUrl, { responseType: 'blob' });
+      
+      // تحويل البيانات الخام لرابط محلي يفهمه المتصفح
+      const localImageUrl = URL.createObjectURL(res.data);
+      setImageBlob(localImageUrl);
+    } catch (err) {
+      console.error("فشل تحميل الصورة بالتوكن:", err);
+    }
+  };
+
   return (
-    <div className="dashboard-container">
+    <div className="admin-layout">
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
-      <main className={`dashboard-main ${isSidebarOpen ? "blur-effect" : ""}`}>
+      <div className="admin-main-content">
         <Navbar />
 
-        <motion.div
-          className="profile-content"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+        <motion.div 
+          className="profile-page-container"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
         >
-          {/* العنوان (نفس ستايل الداشبورد) */}
-          <header className="dash-header">
+          <header className="admin-page-header">
             <div>
-              <h1 className="dash-title">AGENT PROFILE</h1>
-              <p className="dash-subtitle">MANAGE YOUR IDENTITY AND SECURITY</p>
+              <h1 className="admin-title">Agent Profile</h1>
+              <p className="admin-subtitle">Secure dossier management</p>
             </div>
-            <button className="secondary-btn" onClick={() => window.location.reload()}>SYNC DATA</button>
+            <div className="admin-stats-brief">
+              ID: {profileData?.id?.substring(0, 8) || "---"}
+            </div>
           </header>
 
           {loading ? (
-            <div className="admin-loading">DECRYPTING...</div>
+            <div className="admin-loading" style={{textAlign:'center', marginTop:'50px'}}>
+              <h2>DECRYPTING IDENTITY...</h2>
+            </div>
           ) : (
-            <div className="profile-grid">
+            <div className="profile-flex-layout">
               
-              {/* الجزء الأول: بيانات العميل */}
-              <section className="metric-card">
-                <h3 style={{ color: '#3b82f6', marginBottom: '25px', fontSize: '13px' }}>PERSONAL DOSSIER</h3>
-                
-                <div className="info-item">
-                  <label>FULL NAME</label>
-                  <span>{profileData?.fullName || "NOT FOUND"}</span>
+              <section className="profile-details-card">
+                <div className="profile-info-field">
+                  <label>Full Identity Name</label>
+                  <p>{profileData?.fullName || "Ahmed Abdullah"}</p>
                 </div>
 
-                <div className="info-item">
-                  <label>AGENT EMAIL</label>
-                  <span>{profileData?.email}</span>
+                <div className="profile-info-field">
+                  <label>Secure Email</label>
+                  <p>{profileData?.email}</p>
                 </div>
 
-                <div className="info-item">
-                  <label>CONTACT NUMBER</label>
-                  <span>{profileData?.phoneNumber || "N/A"}</span>
+                <div className="profile-info-field">
+                  <label>Member Since</label>
+                  <p>{profileData?.createdOn ? new Date(profileData.createdOn).toLocaleDateString() : "N/A"}</p>
                 </div>
 
-                <div style={{ marginTop: '30px' }}>
-                   <button className="blue-action-btn">EDIT IDENTITY</button>
+                <div style={{marginTop: '30px'}}>
+                  <button className="refresh-btn">Edit Profile</button>
                 </div>
               </section>
 
-              {/* الجزء الثاني: الصورة والحالة */}
-              <section className="profile-avatar-section">
-                <div className="metric-card profile-avatar-container">
+              <section className="profile-side-card">
+                <div className="avatar-display-wrapper">
+                  {/* هنا نستخدم imageBlob الذي جلبناه بالتوكن */}
                   <img 
-                    src={profileData?.imagePath || `https://ui-avatars.com/api/?name=${profileData?.fullName}&background=3b82f6&color=fff`} 
-                    alt="Agent" 
-                    className="profile-avatar-img"
+                    src={imageBlob || `https://ui-avatars.com/api/?name=${profileData?.fullName}&background=3b82f6&color=fff`} 
+                    alt="Agent Avatar" 
+                    className="profile-avatar-large"
+                    onError={(e) => {
+                      // لو كل المحاولات فشلت، نعرض الـ Avatar البديل بلون أحمر
+                      e.target.src = `https://ui-avatars.com/api/?name=${profileData?.fullName}&background=ef4444&color=fff`;
+                    }}
                   />
-                  <h2 className="metric-value" style={{fontSize: '22px'}}>ACTIVE</h2>
-                  <p className="dash-subtitle">CLEARANCE LEVEL: {profileData?.role}</p>
+                  <div className="status-indicator">
+                    <span className="dot"></span> SYSTEM ACTIVE
+                  </div>
                 </div>
               </section>
 
@@ -94,11 +122,10 @@ function Profile() {
           )}
         </motion.div>
 
-        {/* زر الموبايل العائم */}
         <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
           {isSidebarOpen ? "✕" : "☰"}
         </button>
-      </main>
+      </div>
     </div>
   );
 }
