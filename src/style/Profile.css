@@ -1,0 +1,62 @@
+/* حاوية البروفايل الرئيسية */
+.profile-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* شبكة توزيع المحتوى */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr; /* جزء البيانات أكبر من جزء الصورة */
+    gap: 25px;
+    margin-top: 20px;
+}
+
+/* ستايل عناصر البيانات الشخصية */
+.info-item {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-item label {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    display: block;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.info-item span {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* قسم الصورة الشخصية */
+.profile-avatar-container {
+    text-align: center;
+}
+
+.profile-avatar-img {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 4px solid #1e293b;
+    object-fit: cover;
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);
+    margin-bottom: 20px;
+}
+
+/* التوافق مع الموبايل (Responsive) */
+@media (max-width: 1024px) {
+    .profile-grid {
+        grid-template-columns: 1fr; /* العناصر تحت بعض في الموبايل */
+    }
+    
+    .profile-avatar-img {
+        width: 120px;
+        height: 120px;
+    }
+}

@@ -203,3 +203,27 @@
   
   .search-box { width: 100%; }
 }
+
+
+.admin-main-content {
+  flex: 1;
+  margin-left: 260px; /* مساحة السايدبار الثابت */
+  
+  /* 🛡️ إضافة Padding علوي لعمل مسافة أمان تحت الـ Navbar */
+  padding: 100px 20px 20px 20px; 
+  
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* في حالة الموبايل، نتأكد إن المسافة لسه موجودة */
+@media (max-width: 1024px) {
+  .admin-main-content {
+    margin-left: 0;
+    padding: 90px 15px 20px 15px; /* مساحة أصغر قليلاً للموبايل */
+  }
+}
