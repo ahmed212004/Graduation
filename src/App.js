@@ -12,12 +12,12 @@ import PromptTesting from "./components/PromptTesting";
 import CompleteProfile from "./Pages/CompleteProfile";
 import Profile from "./Pages/Profile";
 import AdminAccounts from "./Pages/AdminAccounts";
+import CheckoutPage from "./Pages/CheckoutPage"; // استيراد صفحة الدفع
 
-// مكون حماية الصفحات: بيمنع الدخول لو مفيش توكن
+// مكون حماية الصفحات
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
   if (!token) {
-    // لو مفيش توكن، ارميه على اللوجين فوراً
     return <Navigate to="/login" replace />;
   }
   return children;
@@ -27,7 +27,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 1. المسارات العامة (بدون حماية) */}
+        {/* 1. المسارات العامة */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -35,15 +35,19 @@ function App() {
         <Route path="/reset-code" element={<ResetCodePage />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* 2. المسارات المحمية (بشرط التوكن) */}
+        {/* 2. المسارات المحمية */}
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/plans" element={<ProtectedRoute><PlansPage /></ProtectedRoute>} />
+        
+        {/* 🔥 تعديل مسار الدفع هنا */}
+        <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+        
         <Route path="/successful-attacks" element={<ProtectedRoute><SuccessfulAttacks /></ProtectedRoute>} />
         <Route path="/prompt-testing" element={<ProtectedRoute><PromptTesting /></ProtectedRoute>} />
         <Route path="/complete-profile" element={<ProtectedRoute><CompleteProfile /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        
-        {/* 🔴 مسار صفحة الأدمن - تمت إضافته هنا */}
+
+        {/* مسار صفحة الأدمن */}
         <Route 
           path="/admin/accounts" 
           element={
@@ -53,11 +57,12 @@ function App() {
           } 
         />
 
-        {/* 3. توجيه المسارات غير المعروفة */}
+        {/* 3. التوجيه التلقائي */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
 export default App;

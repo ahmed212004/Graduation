@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api"; 
 import Navbar from "../components/Navbar";
 import PlanCard from "../components/PlanCard";
-
-// استدعاء الستايل الجديد
+import { motion } from "framer-motion";
 import "../style/Plans.css";
 
 export default function PlansPage() {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openFaq, setOpenFaq] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPlans();
@@ -17,103 +17,57 @@ export default function PlansPage() {
 
   const fetchPlans = async () => {
     try {
-      const res = await axios.get("http://strike-defender-v1.runasp.net/api/Plans/Get_Plans");
-      if (res.data && res.data.length > 0) {
-        setPlans(res.data);
-      } else {
-        throw new Error("Empty Data");
-      }
+      setLoading(true);
+      const res = await api.get("/api/Plans/Get_Plans");
+      setPlans(res.data.length > 0 ? res.data : fallbackPlans);
     } catch (err) {
-      setPlans([
-        { id: 1, name: "Starter", price: "49", features: ["5 Active Scans", "Basic Reporting", "Email Support"] },
-        { id: 2, name: "Pro", price: "149", features: ["Unlimited Scans", "Advanced AI Threat Detection", "24/7 Priority Support", "Full API Access"] },
-        { id: 3, name: "Enterprise", price: "499", features: ["Custom Deployment", "Dedicated Account Manager", "99.99% SLA Guarantee", "On-site Onboarding"] }
-      ]);
+      setPlans(fallbackPlans);
     } finally {
       setLoading(false);
     }
   };
 
-  const faqs = [
-    {
-      question: "How does the Pro plan differ from Starter?",
-      answer: "The Pro plan unlocks our proprietary AI threat detection engine, provides unlimited scan capabilities, and guarantees priority response times."
-    },
-    {
-      question: "Can I upgrade or downgrade anytime?",
-      answer: "Yes, you can upgrade or downgrade your plan at any time from your account dashboard."
-    },
-    {
-      question: "What is the Strike Defender System SLA?",
-      answer: "We offer a 99.99% uptime SLA for our Enterprise customers."
-    }
+  const fallbackPlans = [
+    { id: 1, name: "Starter", price: "49", features: ["5 Active Scans", "Basic Reporting"] },
+    { id: 2, name: "Pro", price: "149", features: ["Unlimited Scans", "AI Threat Detection"] },
+    { id: 3, name: "Enterprise", price: "499", features: ["Custom Deployment", "Dedicated Manager"] }
   ];
+
+  // عند الضغط على زر الشراء، ننتقل لصفحة الـ Checkout
+  const goToCheckout = (plan) => {
+    navigate("/checkout", { state: { plan } });
+  };
 
   return (
     <div className="plans-page-wrapper">
       <Navbar />
-
       <div className="plans-container">
         <header className="plans-header">
-          <h1 className="plans-title">Flexible Plans for Every Shield</h1>
-          <p className="plans-subtitle">
-            Choose the right level of protection for your enterprise assets. Scale your security as you grow.
-          </p>
+          <motion.h1 initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="plans-title">
+            Security Tiers
+          </motion.h1>
+          <p className="plans-subtitle">Select the best protection for your assets.</p>
         </header>
 
         {loading ? (
-          <h2 style={{ color: "#fff", marginTop: "50px" }}>Loading...</h2>
+          <div className="admin-loading"><h2>DECRYPTING PLANS...</h2></div>
         ) : (
           <div className="plans-grid">
             {plans.map((plan, index) => (
-              <PlanCard
-                key={plan.id}
-                plan={plan}
-                highlight={index === 1}
-              />
-            ))}
-          </div>
-        )}
-
-        <section className="faq-section">
-          <h2 className="faq-title">Frequently Asked Questions</h2>
-          <div className="faq-list">
-            {faqs.map((faq, index) => (
-              <div key={index} className="faq-item" onClick={() => setOpenFaq(openFaq === index ? null : index)}>
-                <div className="faq-question">
-                  {faq.question}
-                  <span style={{ 
-                    color: "#a855f7", 
-                    transform: openFaq === index ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 0.3s ease",
-                    fontSize: "12px"
-                  }}>
-                    {openFaq === index ? "▲" : "▼"}
-                  </span>
-                </div>
-                {openFaq === index && (
-                  <div className="faq-answer">
-                    {faq.answer}
-                  </div>
-                )}
+              <div key={plan.id} className="plan-card-wrapper">
+                <PlanCard plan={plan} highlight={index === 1} />
+                <button 
+                  className="auth-submit-btn" 
+                  style={{ marginTop: '15px', width: '100%', background: index === 1 ? 'linear-gradient(90deg, #a855f7, #3b82f6)' : '#1e293b' }}
+                  onClick={() => goToCheckout(plan)}
+                >
+                  GET STARTED
+                </button>
               </div>
             ))}
           </div>
-        </section>
+        )}
       </div>
-
-      <footer className="plans-footer">
-        <div className="footer-content">
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{color: "#a855f7", fontSize: "16px"}}>✽</span> © 2024 Strike Defender System.
-          </div>
-          <div className="footer-links">
-            <span>Privacy Policy</span>
-            <span>Terms of Service</span>
-            <span>Contact</span>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
