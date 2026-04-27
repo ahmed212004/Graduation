@@ -1,31 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { motion } from "framer-motion";
 
-// الستايلات الخاصة بك
 import "../style/Admin.css"; 
 import "../style/Profile.css"; 
 
 function Profile() {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [imageBlob, setImageBlob] = useState(null); // تخزين رابط الصورة المؤقت
+  const [imageBlob, setImageBlob] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
+  // ✅ fixed with useCallback
+  const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
-      // جلب بيانات البروفايل (التوكن يرسل تلقائياً عبر api.js)
       const response = await api.get("/api/Accounts/Get_Profile");
       setProfileData(response.data);
 
-      // إذا وجدنا رابط صورة، نقوم بجلبها بشكل منفصل بالتوكن
       if (response.data.photoUrl) {
         fetchSecureImage(response.data.photoUrl);
       }
@@ -34,15 +28,15 @@ function Profile() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // دالة لجلب الصورة كـ Blob لتخطي مشاكل الـ Authorization
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
   const fetchSecureImage = async (imageUrl) => {
     try {
-      // نطلب الصورة من السيرفر كـ Blob (Binary Large Object)
-      const res = await api.get(imageUrl, { responseType: 'blob' });
-      
-      // تحويل البيانات الخام لرابط محلي يفهمه المتصفح
+      const res = await api.get(imageUrl, { responseType: "blob" });
       const localImageUrl = URL.createObjectURL(res.data);
       setImageBlob(localImageUrl);
     } catch (err) {
@@ -67,6 +61,7 @@ function Profile() {
               <h1 className="admin-title">Agent Profile</h1>
               <p className="admin-subtitle">Secure dossier management</p>
             </div>
+
             <div className="admin-stats-brief">
               ID: {profileData?.id?.substring(0, 8) || "---"}
             </div>
@@ -92,7 +87,11 @@ function Profile() {
 
                 <div className="profile-info-field">
                   <label>Member Since</label>
-                  <p>{profileData?.createdOn ? new Date(profileData.createdOn).toLocaleDateString() : "N/A"}</p>
+                  <p>
+                    {profileData?.createdOn
+                      ? new Date(profileData.createdOn).toLocaleDateString()
+                      : "N/A"}
+                  </p>
                 </div>
 
                 <div style={{marginTop: '30px'}}>
@@ -102,13 +101,14 @@ function Profile() {
 
               <section className="profile-side-card">
                 <div className="avatar-display-wrapper">
-                  {/* هنا نستخدم imageBlob الذي جلبناه بالتوكن */}
                   <img 
-                    src={imageBlob || `https://ui-avatars.com/api/?name=${profileData?.fullName}&background=3b82f6&color=fff`} 
+                    src={
+                      imageBlob ||
+                      `https://ui-avatars.com/api/?name=${profileData?.fullName}&background=3b82f6&color=fff`
+                    } 
                     alt="Agent Avatar" 
                     className="profile-avatar-large"
                     onError={(e) => {
-                      // لو كل المحاولات فشلت، نعرض الـ Avatar البديل بلون أحمر
                       e.target.src = `https://ui-avatars.com/api/?name=${profileData?.fullName}&background=ef4444&color=fff`;
                     }}
                   />
@@ -122,7 +122,10 @@ function Profile() {
           )}
         </motion.div>
 
-        <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+        <button 
+          className="mobile-menu-btn"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
           {isSidebarOpen ? "✕" : "☰"}
         </button>
       </div>

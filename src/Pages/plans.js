@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api"; 
 import Navbar from "../components/Navbar";
@@ -11,11 +11,14 @@ export default function PlansPage() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchPlans();
-  }, []);
+  const fallbackPlans = [
+    { id: 1, name: "Starter", price: "49", features: ["5 Active Scans", "Basic Reporting"] },
+    { id: 2, name: "Pro", price: "149", features: ["Unlimited Scans", "AI Threat Detection"] },
+    { id: 3, name: "Enterprise", price: "499", features: ["Custom Deployment", "Dedicated Manager"] }
+  ];
 
-  const fetchPlans = async () => {
+  // ✅ fixed with useCallback
+  const fetchPlans = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get("/api/Plans/Get_Plans");
@@ -25,15 +28,12 @@ export default function PlansPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fallbackPlans = [
-    { id: 1, name: "Starter", price: "49", features: ["5 Active Scans", "Basic Reporting"] },
-    { id: 2, name: "Pro", price: "149", features: ["Unlimited Scans", "AI Threat Detection"] },
-    { id: 3, name: "Enterprise", price: "499", features: ["Custom Deployment", "Dedicated Manager"] }
-  ];
+  useEffect(() => {
+    fetchPlans();
+  }, [fetchPlans]);
 
-  // عند الضغط على زر الشراء، ننتقل لصفحة الـ Checkout
   const goToCheckout = (plan) => {
     navigate("/checkout", { state: { plan } });
   };
@@ -57,8 +57,14 @@ export default function PlansPage() {
               <div key={plan.id} className="plan-card-wrapper">
                 <PlanCard plan={plan} highlight={index === 1} />
                 <button 
-                  className="auth-submit-btn" 
-                  style={{ marginTop: '15px', width: '100%', background: index === 1 ? 'linear-gradient(90deg, #a855f7, #3b82f6)' : '#1e293b' }}
+                  className="auth-submit-btn"
+                  style={{
+                    marginTop: "15px",
+                    width: "100%",
+                    background: index === 1
+                      ? "linear-gradient(90deg, #a855f7, #3b82f6)"
+                      : "#1e293b"
+                  }}
                   onClick={() => goToCheckout(plan)}
                 >
                   GET STARTED
