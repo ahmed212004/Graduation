@@ -228,3 +228,180 @@
     opacity: 0.9;
     transform: translateY(-2px);
 }
+
+
+/* الألوان والخطوط العامة */
+.plans-page-wrapper {
+    background-color: #020617; /* لون الخلفية الغامق من الصورة */
+    color: white;
+    min-height: 100vh;
+    padding-top: 100px;
+    font-family: 'Inter', sans-serif;
+}
+
+.plans-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Header Section */
+.pricing-badge {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.plans-main-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.plans-subtitle {
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-bottom: 60px;
+}
+
+/* التنسيق الأساسي للكروت - Flexbox */
+.plans-main-grid {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 30px; /* المسافة بين الكروت */
+    margin-bottom: 100px;
+}
+
+.plan-card {
+    background: #0f172a; /* لون الكارت الداخلي */
+    border: 1px solid #1e293b;
+    border-radius: 20px;
+    padding: 40px 30px;
+    width: 380px;
+    text-align: left;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+/* تمييز خطة Pro */
+.pro-card {
+    border: 2px solid #6366f1; /* حدود زرقاء بنفسجية */
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+}
+
+.most-popular-badge {
+    background: #6366f1;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* نصوص الكارت */
+.plan-name { font-size: 1.5rem; margin-bottom: 10px; }
+.plan-price { margin-bottom: 15px; }
+.price-symbol { font-size: 1.5rem; vertical-align: top; margin-right: 2px; }
+.price-amount { font-size: 3.5rem; font-weight: 800; }
+.price-period { color: #64748b; font-size: 1rem; }
+
+.plan-desc { color: #94a3b8; font-size: 0.95rem; margin-bottom: 30px; height: 45px; }
+
+/* الأزرار */
+.plan-btn-primary {
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    border: none;
+    background: #1e293b;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 35px;
+    transition: background 0.3s;
+}
+
+.pro-card .plan-btn-primary {
+    background: #6366f1; /* زرار Pro الملون */
+}
+
+/* القائمة (Features) */
+.plan-features {
+    list-style: none;
+    padding: 0;
+}
+
+.plan-features li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+}
+
+.check-icon {
+    color: #6366f1;
+    margin-right: 12px;
+    font-weight: bold;
+}
+
+/* FAQ Section */
+.faq-section { margin-top: 100px; text-align: left; }
+.faq-title { text-align: center; margin-bottom: 60px; font-size: 2.5rem; }
+.faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px 60px;
+}
+.faq-item h4 { color: white; margin-bottom: 12px; font-size: 1.1rem; }
+.faq-item p { color: #94a3b8; line-height: 1.6; }
+
+
+/* الحاوية الأساسية للخطط */
+.plans-main-grid {
+    display: flex !important; /* التأكيد على استخدام flex */
+    flex-direction: row !important; /* إجبار العناصر تكون في صف واحد */
+    justify-content: center; /* تجميعهم في المنتصف */
+    align-items: stretch; /* توحيد طول الكروت */
+    gap: 20px; /* المسافة بين الكروت */
+    width: 100%; /* تأكد إنها واخدة عرض الشاشة */
+    max-width: 1200px; /* أقصى عرض للمجموعة */
+    margin: 0 auto; /* سنترة المجموعة كلها */
+    flex-wrap: nowrap; /* 🔥 التعديل السحري: يمنعهم ينزلوا تحت بعض مهما حصل */
+}
+
+/* تعديل عرض الكارت نفسه */
+.plan-card {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 20px;
+    padding: 30px 20px;
+    /* بدل width ثابت، بنستخدم flex-basis عشان يتوزعوا صح */
+    flex: 1; 
+    min-width: 300px; /* أقل عرض للكارت عشان ميبقاش رفيع اوي */
+    max-width: 380px; /* أقصى عرض للكارت */
+    text-align: left;
+    position: relative;
+}
+
+/* لو الشاشة صغيرة (موبايل) خليهم ينزلوا تحت بعض */
+@media (max-width: 992px) {
+    .plans-main-grid {
+        flex-wrap: wrap; /* يسمح بالنزول في الموبايل بس */
+    }
+    .plan-card {
+        flex: none;
+        width: 100%; /* الكارت ياخد العرض كله في الموبايل */
+    }
+}
