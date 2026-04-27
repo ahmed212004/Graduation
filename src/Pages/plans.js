@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api"; 
+import api from "../services/api";
 import Navbar from "../components/Navbar";
-import PlanCard from "../components/PlanCard";
 import { motion } from "framer-motion";
 import "../style/Plans.css";
 
@@ -11,14 +10,13 @@ export default function PlansPage() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // 🔥 البيانات الحقيقية من الصورة كـ Fallback في حالة فشل الـ API
+  // البيانات مطابقة تماماً للصورة اللي بعتها
   const fallbackPlans = [
-    { id: 1, name: "Basic", price: "0", features: ["Basic SQLi Detection", "Essential XSS Protection", "Up to 5 Sites", "Community Support"] },
-    { id: 2, name: "Pro", price: "49", features: ["Advanced AI Detection", "Real-time Smart Alerts", "Unlimited Sites", "24/7 Priority Support", "Full API Access"] },
-    { id: 3, name: "Enterprise", price: "Custom", features: ["Custom Hybrid Deployment", "99.9% SLA Guarantee", "Dedicated Success Manager", "Advanced SIEM Integration"] }
+    { id: "2eb2af12-aa97-4af5-9770-7b91a592b90f", name: "FREE", price: "0", description: "Perfect for individuals and side projects." },
+    { id: "077d727a-5827-43d6-b836-6297614625b8", name: "PRO", price: "200", description: "The complete toolkit for growing businesses." },
+    { id: "ee73cf71-95dd-47ae-92d3-49f6281d6bca", name: "ENTERPRISE", price: "500", description: "Bespoke security for large-scale operations." }
   ];
 
-  // دالة الـ Hook لجلب البيانات من الـ API - تم تثبيتها بـ useCallback
   const fetchPlans = useCallback(async () => {
     try {
       setLoading(true);
@@ -26,94 +24,69 @@ export default function PlansPage() {
       if (res.data && res.data.length > 0) {
         setPlans(res.data);
       } else {
-        throw new Error("Empty Data");
+        setPlans(fallbackPlans);
       }
     } catch (err) {
-      console.warn("Using fallback plans data.", err.message);
-      // لو الـ API منفعش، بنعرض البيانات المظبوطة دي علطول
       setPlans(fallbackPlans);
     } finally {
       setLoading(false);
     }
-  }, []); // لا يوجد اعتمادات لتجنب الـ Loop
+  }, []);
 
   useEffect(() => {
     fetchPlans();
-  }, [fetchPlans]); // تم تصحيح الاعتمادات
+  }, [fetchPlans]);
 
   const goToCheckout = (plan) => {
-    // لو الخطة Custom، ممكن تبعتهم لصفحة Contact أو غيره، هنا بنوديهم Checkout
-    if (plan.price.toLowerCase() === "custom") {
-        alert("Redirecting to Contact Sales...");
-        // navigate("/contact"); // مثال
-    } else {
-        navigate("/checkout", { state: { plan } });
-    }
+    navigate("/checkout", { state: { plan } });
   };
 
-  // بيانات الـ FAQ من الصورة
-  const faqs = [
-    { q: "Can I switch plans later?", a: "Yes, you can upgrade or downgrade your plan at any time from your dashboard settings." },
-    { q: "Do you offer educational discounts?", a: "Yes, we support students and non-profits with a 50% discount on all our plans." },
-    { q: "Is there a free trial for Pro?", a: "Absolutely. We offer a 14-day free trial for the Pro plan with no credit card required." },
-    { q: "How secure is my data?", a: "Data security is our priority. We use industry-standard encryption and never store raw traffic logs." }
-  ];
-
   return (
-    <div className="plans-page-wrapper auth-container">
+    <div className="plans-page-wrapper">
       <Navbar />
       <div className="plans-container">
-        <header className="plans-header auth-header">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            className="plans-title auth-title"
-          >
-            Choose Your Security Plan
-          </motion.h1>
-          <p className="plans-subtitle auth-subtitle">
-            AI-powered SQLi & XSS Threat Detection Platform. Protect your digital assets with enterprise-grade intelligence.
+        <header className="plans-header">
+          <p className="plans-subtitle">
+            AI-powered SQLi & XSS Threat Detection Platform. Protect your digital assets <br />
+            with enterprise-grade intelligence.
           </p>
         </header>
 
         {loading ? (
-          <div className="admin-loading"><h2>DECRYPTING PLANS...</h2></div>
+          <div className="admin-loading"><h2>INITIALIZING SYSTEM...</h2></div>
         ) : (
-          <div className="plans-grid">
+          <div className="plans-main-grid">
             {plans.map((plan, index) => (
-              <div key={plan.id} className="plan-card-wrapper auth-card">
-                <PlanCard plan={plan} highlight={index === 1} />
+              <div key={plan.id} className="plan-column">
+                {/* الكارت الداخلي */}
+                <div className={`plan-inner-card ${index === 1 ? "pro-highlight" : ""}`}>
+                  {index === 1 && <span className="most-popular-tag">MOST POPULAR</span>}
+                  <h3 className="plan-type">{plan.name}</h3>
+                  <div className="plan-price-container">
+                    <span className="currency">$</span>
+                    <span className="price-value">{plan.price}</span>
+                    <span className="duration">/mo</span>
+                  </div>
+                  
+                  <button 
+                    className={`inner-action-btn ${index === 1 ? "pro-btn" : ""}`}
+                    onClick={() => goToCheckout(plan)}
+                  >
+                    {index === 0 ? "Get Started" : index === 1 ? "Upgrade to Pro" : "Contact Sales"}
+                  </button>
+                </div>
+
+                {/* الزرار الخارجي اللي تحت الكارت */}
                 <button 
-                  className="auth-submit-btn checkout-btn" 
-                  style={{
-                    marginTop: '15px',
-                    width: '100%',
-                    background: index === 1 
-                        ? "linear-gradient(90deg, #a855f7, #3b82f6)" 
-                        : "#1e293b", // Pro لون مختلف
-                    color: "white"
-                  }}
+                  className={`outer-main-btn ${index === 1 ? "pro-gradient-btn" : ""}`}
                   onClick={() => goToCheckout(plan)}
                 >
-                  {index === 0 ? "Get Started" : (index === 1 ? "Start Free Trial" : "Contact Sales")}
+                   {index === 0 ? "Get Started" : index === 1 ? "Start Free Trial" : "Contact Sales"}
                 </button>
               </div>
             ))}
           </div>
         )}
-
-        {/* 🔥 جزء الأسئلة الشائعة (FAQ) */}
-        <section className="plans-faq">
-          <h2 className="faq-title">Frequently Asked Questions</h2>
-          <div className="faq-grid">
-            {faqs.map((faq, i) => (
-              <div key={i} className="faq-item">
-                <h4 className="faq-question">{faq.q}</h4>
-                <p className="faq-answer">{faq.a}</p>
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
     </div>
   );

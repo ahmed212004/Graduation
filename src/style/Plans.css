@@ -114,3 +114,117 @@
   color: var(--text-grey);
   line-height: 1.6;
 }
+/* Plans.css */
+.plans-page-wrapper {
+    background-color: #020617; /* لون الخلفية الغامق جداً */
+    min-height: 100vh;
+    color: white;
+    padding-top: 100px;
+}
+
+.plans-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.plans-subtitle {
+    text-align: center;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-bottom: 60px;
+}
+
+.plans-main-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.plan-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 350px;
+}
+
+/* الكارت الداخلي */
+.plan-inner-card {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 40px 30px;
+    position: relative;
+    text-align: left;
+}
+
+.plan-inner-card.pro-highlight {
+    border: 2px solid #a855f7; /* حدود بنفسجي للـ Pro */
+}
+
+.most-popular-tag {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #a855f7;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.plan-type {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.plan-price-container {
+    margin-bottom: 30px;
+}
+
+.currency { font-size: 1.5rem; vertical-align: top; margin-right: 5px; }
+.price-value { font-size: 4rem; font-weight: 800; }
+.duration { color: #64748b; }
+
+/* الأزرار الداخلية */
+.inner-action-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    background: transparent;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.inner-action-btn.pro-btn {
+    background: #a855f7;
+    border: none;
+}
+
+/* الأزرار الخارجية الكبيرة */
+.outer-main-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 12px;
+    background: #1e293b;
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.pro-gradient-btn {
+    background: linear-gradient(90deg, #a855f7, #3b82f6) !important;
+}
+
+.outer-main-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
