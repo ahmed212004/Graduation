@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import "../style/Auth.css"; // بنستخدم نفس الستايل الموحد للمشروع
-import { color } from "framer-motion";
+//import { color } from "framer-motion";
 
 export default function CheckoutPage() {
   const location = useLocation();
