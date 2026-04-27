@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // إضافة useNavigate للتوجيه الداخلي
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import "../style/Auth.css";
 
 function RegisterPage() {
-  const navigate = useNavigate(); // تعريف الـ navigate
+  const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState([]); // دي المصفوفة اللي هنخزن فيها الأخطاء
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setErrors([]);
+    setErrors([]); // بنصفر الأخطاء أول ما المستخدم يبدأ يكتب تاني
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -21,27 +21,33 @@ function RegisterPage() {
       setLoading(true);
       setErrors([]);
       
-      // 1. طلب التسجيل
       await api.post("/api/Authentication/register", form);
       
-      // 2. تنظيف شامل للمتصفح لضمان عدم وجود توكن قديم يسبب Redirect عشوائي
       localStorage.clear();
       sessionStorage.clear();
 
-      console.log("Registration success. Navigating to VerifyAccount...");
-
-      // 3. التوجيه لصفحة التفعيل باستخدام navigate مع تمرير الإيميل في الـ state
-      // نستخدم replace: true لمنع المستخدم من العودة لصفحة التسجيل بعد النجاح
       navigate("/VerifyAccount", { 
         state: { email: form.email }, 
         replace: true 
       });
 
     } catch (err) {
-      console.error("Register Error:", err.response);
-      // محاولة استخراج رسالة الخطأ من السيرفر أو عرض رسالة افتراضية
-      const msg = err.response?.data?.message || "Registration failed. This email might already be registered.";
-      setErrors([msg]);
+      console.error("Register Error:", err.response?.data);
+
+      // هنا اللعبة كلها: بنشوف السيرفر بعت أخطاء Validation ولا لأ
+      const serverErrors = err.response?.data?.errors;
+
+      if (serverErrors) {
+        /** * السيرفر بيبعت الأخطاء كـ Object: { Password: ["error1", "error2"], Email: ["error3"] }
+         * إحنا بنحولها لمصفوفة واحدة (Flat Array) عشان نعرضها تحت بعضها
+         */
+        const allErrors = Object.values(serverErrors).flat();
+        setErrors(allErrors);
+      } else {
+        // لو مفيش أخطاء محددة، بنعرض العنوان العام للخطأ أو رسالة افتراضية
+        const fallbackMsg = err.response?.data?.title || "Registration failed. Please check your data.";
+        setErrors([fallbackMsg]);
+      }
     } finally {
       setLoading(false);
     }
@@ -58,9 +64,14 @@ function RegisterPage() {
         </div>
 
         <div className="auth-card">
+          {/* عرض الأخطاء بشكل قائمة (Bullet Points) */}
           {errors.length > 0 && (
-            <div className="auth-error-box">
-              {errors.map((e, i) => <p key={i} style={{ margin: 0 }}>{e}</p>)}
+            <div className="auth-error-box" style={{ textAlign: "left" }}>
+              <ul style={{ margin: 0, paddingLeft: "20px", color: "#ff4d4d", fontSize: "0.9rem" }}>
+                {errors.map((error, index) => (
+                  <li key={index} style={{ marginBottom: "5px" }}>{error}</li>
+                ))}
+              </ul>
             </div>
           )}
 
@@ -93,6 +104,9 @@ function RegisterPage() {
                   required 
                 />
               </div>
+              <small style={{ color: "#64748b", fontSize: "0.75rem", marginTop: "5px", display: "block" }}>
+                Must include: Uppercase, Lowercase, Number, and Special Character (@#$!).
+              </small>
             </div>
 
             <button className="auth-submit-btn" disabled={loading}>

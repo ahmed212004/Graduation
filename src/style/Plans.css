@@ -1,121 +1,116 @@
-/* --- Layout --- */
+/* --- الألوان والمتغيرات الخاصة بالمشروع --- */
+:root {
+  --bg-color: #0d0d17; /* الخلفية الغامقة جداً من الصورة */
+  --card-bg: #11111e; /* خلفية الـ Card */
+  --primary-gradient: linear-gradient(90deg, #a855f7, #3b82f6); /* الـ Gradient البنفسجي في الأزرق */
+  --text-white: #f8fafc;
+  --text-grey: #9ca3af;
+}
+
+/* Container الأساسي للصفحة */
 .plans-page-wrapper {
+  background-color: var(--bg-color);
   min-height: 100vh;
-  background: #0d0b14; /* نفس اللون الكحلي الداكن */
-  font-family: "Inter", sans-serif;
+  color: var(--text-white);
+  font-family: 'Inter', sans-serif; /* تأكد إن الفونت ده مستدعى في الـ index.html */
+  padding-bottom: 80px;
+}
+
+/* تنسيق الـ Container */
+.plans-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 100px 20px;
+}
+
+/* الـ Header اللي فوق */
+.plans-header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.plans-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--text-white);
+  margin-bottom: 20px;
+}
+
+.plans-subtitle {
+  font-size: 1.2rem;
+  color: var(--text-grey);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* تنسيق الجريد (Grid) للـ Cards */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 40px;
+  justify-items: center;
+}
+
+/* تنسيق الـ Card الفردي */
+.plan-card-wrapper {
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.plans-container {
-  flex: 1;
-  padding-top: 140px;
-  padding-bottom: 80px;
-  text-align: center;
+.plan-card-wrapper .plan-card {
+  height: 100%;
+  padding-bottom: 30px; /* مسافة للزرار */
 }
 
-/* --- Header Section --- */
-.plans-header {
-  margin-bottom: 60px;
-  padding: 0 20px;
+/* الزرار اللي تحت كل Card */
+.auth-submit-btn.checkout-btn {
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 15px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.plans-title {
-  font-size: 46px;
-  font-weight: 800;
-  color: #fff;
-  margin-bottom: 15px;
-  letter-spacing: -0.5px;
+.auth-submit-btn.checkout-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(168, 85, 247, 0.4);
 }
 
-.plans-subtitle {
-  color: #94a3b8;
-  font-size: 16px;
-  line-height: 1.5;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-/* --- Plans Grid (الجزء المهم) --- */
-.plans-grid {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 25px;
-  flex-wrap: wrap; /* عشان الكروت تنزل تحت بعض في الموبايل */
-  margin-bottom: 100px;
-  padding: 0 20px;
-}
-
-/* --- FAQ Section --- */
-.faq-section {
-  max-width: 850px;
-  margin: 0 auto;
-  text-align: left;
-  padding: 0 20px;
+/* --- جزء الأسئلة الشائعة (FAQ) --- */
+.plans-faq {
+  margin-top: 120px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 80px;
 }
 
 .faq-title {
-  color: #fff;
-  font-size: 26px;
-  margin-bottom: 30px;
-  font-weight: 600;
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 60px;
+  color: var(--text-white);
+}
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px 60px;
 }
 
 .faq-item {
-  border-bottom: 1px solid #2a2438;
-  padding: 24px 0;
-  cursor: pointer;
+  background: transparent;
 }
 
 .faq-question {
-  color: #fff;
-  font-size: 16px;
-  font-weight: 400;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-white);
+  margin-bottom: 10px;
 }
 
 .faq-answer {
-  color: #94a3b8;
-  margin-top: 16px;
-  font-size: 14px;
+  font-size: 1rem;
+  color: var(--text-grey);
   line-height: 1.6;
-  padding-right: 40px;
-}
-
-/* --- Footer --- */
-.plans-footer {
-  border-top: 1px solid #1f1b2e;
-  padding: 30px 60px;
-}
-
-.footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #64748b;
-  font-size: 13px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.footer-links {
-  display: flex;
-  gap: 25px;
-}
-
-/* --- RESPONSIVE FIXES --- */
-@media (max-width: 768px) {
-  .plans-container { padding-top: 100px; }
-  .plans-title { font-size: 28px; }
-  .plans-subtitle { font-size: 14px; }
-  .plans-grid { gap: 40px; } /* زيادة المسافة بين الكروت وهي فوق بعض */
-  
-  .footer-content {
-    flex-direction: column;
-    gap: 20px;
-    text-align: center;
-  }
 }
