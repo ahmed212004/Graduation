@@ -45,6 +45,13 @@ function Sidebar({ isOpen, setIsOpen }) {
           </li>
         </Link>
 
+         {/* Plan page */}
+        <Link to="/plans" className="sidebar-link" onClick={handleLinkClick}>
+          <li className={`sidebar-item ${isActive("/plans") ? "active" : ""}`}>
+            <span className="sidebar-icon">🤑</span> Plans
+          </li>
+        </Link>
+
         
 
         <div className="sidebar-divider">ADMINISTRATION</div>
