@@ -12,7 +12,8 @@ import PromptTesting from "./components/PromptTesting";
 import CompleteProfile from "./Pages/CompleteProfile";
 import Profile from "./Pages/Profile";
 import AdminAccounts from "./Pages/AdminAccounts";
-import CheckoutPage from "./Pages/CheckoutPage"; // استيراد صفحة الدفع
+import CheckoutPage from "./Pages/CheckoutPage"; 
+import About from "./Pages/About"; // 👈 استيراد صفحة الـ About (تأكد من الحرف الكبير P في Pages)
 
 // مكون حماية الصفحات
 const ProtectedRoute = ({ children }) => {
@@ -27,21 +28,21 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 1. المسارات العامة */}
+        {/* 1. المسارات العامة (متاحة للجميع) */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/VerifyAccount" element={<VerifyAccount />} />        
         <Route path="/reset-code" element={<ResetCodePage />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        
+        {/* 🔥 إضافة مسار الـ About هنا */}
+        <Route path="/about" element={<About />} />
 
-        {/* 2. المسارات المحمية */}
+        {/* 2. المسارات المحمية (تحتاج تسجيل دخول) */}
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/plans" element={<ProtectedRoute><PlansPage /></ProtectedRoute>} />
-        
-        {/* 🔥 تعديل مسار الدفع هنا */}
         <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
-        
         <Route path="/successful-attacks" element={<ProtectedRoute><SuccessfulAttacks /></ProtectedRoute>} />
         <Route path="/prompt-testing" element={<ProtectedRoute><PromptTesting /></ProtectedRoute>} />
         <Route path="/complete-profile" element={<ProtectedRoute><CompleteProfile /></ProtectedRoute>} />

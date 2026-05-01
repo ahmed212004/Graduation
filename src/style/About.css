@@ -1,0 +1,210 @@
+/* About.css */
+
+.about-page-root {
+    background-color: #020617; /* نفس لون الخلفية في الصورة */
+    min-height: 100vh;
+}
+
+/* تنسيق الكارت الجديد (يشبه الـ Pricing) */
+.team-card-v2 {
+    background: #0f172a; /* لون كارت داكن */
+    border: 1px solid rgba(56, 157, 181, 0.2);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%; /* عشان الكروت تكون بنفس الطول */
+}
+
+.team-card-v2:hover {
+    border-color: #389db5;
+    box-shadow: 0 0 20px rgba(56, 157, 181, 0.2);
+}
+
+.member-avatar-container {
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #389db5;
+}
+
+.member-avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.team-card-v2 .name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.team-card-v2 .role {
+    color: #389db5;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.team-card-v2 .bio {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.social-actions a {
+    color: #64748b;
+    font-size: 1.1rem;
+    transition: color 0.3s;
+}
+
+.social-actions a:hover {
+    color: #389db5;
+}
+
+/* لضمان ظهور 3 كروت بالظبط في الصف على الشاشات الكبيرة */
+@media (min-width: 992px) {
+    .col-lg-4 {
+        flex: 0 0 auto;
+        width: 33.333333%;
+    }
+}
+.about-page-root {
+    background-color: #020617;
+    min-height: 100vh;
+}
+
+.team-card-v2 {
+    background: rgba(15, 23, 42, 0.8); /* نفس درجة كروت الـ Dashboard */
+    border: 1px solid rgba(56, 157, 181, 0.2);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.team-card-v2:hover {
+    border-color: #389db5;
+    box-shadow: 0 0 20px rgba(56, 157, 181, 0.1);
+}
+
+.avatar-wrapper {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    border: 2px solid #389db5;
+    overflow: hidden;
+    /* لو لسه معندكش صور حقيقية، ده هيعمل شكل دائري محترم */
+    background: #1e293b; 
+}
+
+.avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.role-text {
+    color: #389db5;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.bio-text {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+.team-card-v2 {
+    background: #0f172a; 
+    border: 1px solid rgba(56, 157, 181, 0.2);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    /* هذا السطر يضمن أن الكروت في نفس الصف لها نفس الطول */
+    height: 100%; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.member-avatar-container {
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #389db5;
+}
+
+.member-avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.about-page-root {
+    background-color: #020617;
+    min-height: 100vh;
+}
+
+/* الكارت نفسه */
+.team-card-v2 {
+    background: #0f172a;
+    border: 1px solid rgba(56, 157, 181, 0.2);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+    /* تأكد إنه مش واخد max-width يخليه يكسر السطر */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+    color:#64748b;
+}
+
+/* صورة الطالب */
+.member-avatar-container {
+    width: 110px;
+    height: 110px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #389db5;
+}
+
+.member-avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.team-card-v2 .role {
+    color: #389db5;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 10px;
+    
+}
+
+.team-card-v2 .bio {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+/* إجبار الـ Grid على الظهور كـ Flexbox */
+.row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+}

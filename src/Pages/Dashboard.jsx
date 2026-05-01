@@ -24,10 +24,15 @@ function Dashboard() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [stats, setStats] = useState({
-    totalAttacks: 15000,
+    totalAttacks: 0,
     successfulAttacks: 0,
     successRate: 0,
-    latestPayload: "Loading...",
+    totalRules: 0,
+    activeRules: 0,
+    blockedCount: 0,
+    avgExecutionTime: 0,
+    topAttackType: "N/A",
+    latestPayload: "Scanning...",
     rawData: [] 
   });
   const [loading, setLoading] = useState(true);
@@ -35,19 +40,29 @@ function Dashboard() {
   const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get("/api/Attacks/Get_Successful_Attacks?PageNumber=1&PageSize=50");
-      const successCount = response.data.totalCount || 0;
-      const rate = ((successCount / 15000) * 100).toFixed(2);
+      
+      // 1. نداء الـ Endpoint الجديدة للملخص
+      const overviewRes = await api.get("/api/Dashboard/SecurityOverview");
+      const overview = overviewRes.data;
+
+      // 2. نداء الـ Endpoint القديمة لجلب الـ Logs (عشان زرار الـ Export والـ Payload)
+      const logsRes = await api.get("/api/Attacks/Get_Successful_Attacks?PageNumber=1&PageSize=50");
       
       setStats({
-        totalAttacks: 15000,
-        successfulAttacks: successCount,
-        successRate: rate,
-        latestPayload: response.data.items?.[0]?.payload || "System Clear",
-        rawData: response.data.items || [] 
+        totalAttacks: overview.attacks.totalAttacks,
+        successfulAttacks: overview.attacks.successfulAttacks,
+        successRate: overview.attacks.successRate,
+        totalRules: overview.rules.totalRules,
+        activeRules: overview.rules.activeRules,
+        blockedCount: overview.analysis.blockedCount,
+        avgExecutionTime: overview.analysis.avgExecutionTime,
+        topAttackType: overview.analysis.topAttackType,
+        latestPayload: logsRes.data.items?.[0]?.payload || "System Secure",
+        rawData: logsRes.data.items || [] 
       });
+
     } catch (err) {
-      console.error(err);
+      console.error("Dashboard Sync Error:", err);
     } finally {
       setLoading(false);
     }
@@ -57,17 +72,12 @@ function Dashboard() {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
-  // 🔥 دالة تصدير البيانات لملف CSV (بدون Attack ID)
   const handleExportLogs = () => {
     if (stats.rawData.length === 0) {
       alert("No attack logs available to export.");
       return;
     }
-
-    // 1. تجهيز العناوين (بدون Attack ID)
     const headers = ["Technique", "Payload", "Status Code", "Execution Time (ms)", "Result"];
-    
-    // 2. تحويل البيانات لصفوف نصية مع استبعاد الـ attackId
     const csvRows = [
       headers.join(","), 
       ...stats.rawData.map(attack => [
@@ -78,20 +88,18 @@ function Dashboard() {
         `"${attack.result}"`
       ].join(","))
     ];
-
-    // 3. إنشاء الملف وتنزيله
     const csvContent = csvRows.join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `StrikeDefender_Clean_Logs_${new Date().toLocaleDateString()}.csv`);
+    link.setAttribute("download", `StrikeDefender_Logs_${new Date().toLocaleDateString()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  if (loading) return <div className="page-wrapper" style={{display:'flex', justifyContent:'center', alignItems:'center', color:'white', height:'100vh'}}>LOADING...</div>;
+  if (loading) return <div className="page-wrapper" style={{display:'flex', justifyContent:'center', alignItems:'center', color:'white', height:'100vh'}}>SYNCHRONIZING AI AGENTS...</div>;
 
   return (
     <div className="page-wrapper">
@@ -106,40 +114,45 @@ function Dashboard() {
 
         <main className={`dashboard-main ${isMenuOpen ? 'blur-effect' : ''}`} onClick={() => isMenuOpen && setIsMenuOpen(false)}>
           <nav style={{color: "#64748b", fontSize: "12px", marginBottom: "20px"}}>
-            Main Console › Analytics › <span style={{color: "#fff"}}>Security_Stream</span>
+            Main Console › Analytics › <span style={{color: "#fff"}}>Security_Overview</span>
           </nav>
 
           <header className="dash-header">
             <div>
-              <h1 className="dash-title">STRIKE DEFENDER <span style={{fontSize:'12px', background:'rgba(59,130,246,0.1)', color:'#3b82f6', padding:'4px 8px', borderRadius:'10px'}}>LIVE</span></h1>
-              <p className="dash-subtitle">Real-time AI monitoring and threat detection.</p>
+              <h1 className="dash-title">STRIKE DEFENDER <span style={{fontSize:'12px', background:'rgba(59,130,246,0.1)', color:'#3b82f6', padding:'4px 8px', borderRadius:'10px'}}>AI ACTIVE</span></h1>
+              <p className="dash-subtitle">Top Threat: <span style={{color:'#ef4444'}}>{stats.topAttackType}</span></p>
             </div>
             <div className="action-buttons">
-              <button className="secondary-btn" onClick={fetchDashboardData}>Sync Data</button>
-              <button className="primary-btn" onClick={() => navigate("/successful-attacks")}>Deep Inspect</button>
+              <button className="secondary-btn" onClick={fetchDashboardData}>Sync Intelligence</button>
+              <button className="primary-btn" onClick={() => navigate("/successful-attacks")}>View All Logs</button>
             </div>
           </header>
 
           <section className="top-grid">
-            <MetricCard title="TOTAL ANALYZED" value={<CountUp end={stats.totalAttacks} />} change="WAF Monitoring" color="#3b82f6" icon="📡" />
-            <MetricCard title="BREACHES FOUND" value={<CountUp end={stats.successfulAttacks} />} change="Action Required" color="#ef4444" icon="⚠️" />
-            <MetricCard title="INTEGRITY SCORE" value={`${(100 - stats.successRate).toFixed(2)}%`} change="System Health" color="#10b981" icon="🛡️" />
+            <MetricCard title="TOTAL ATTACKS" value={<CountUp end={stats.totalAttacks} />} change={`${stats.blockedCount} Blocked`} color="#3b82f6" icon="📡" />
+            <MetricCard title="SUCCESSFUL BREACHES" value={<CountUp end={stats.successfulAttacks} />} change="High Risk" color="#ef4444" icon="⚠️" />
+            <MetricCard title="ACTIVE RULES" value={`${stats.activeRules}/${stats.totalRules}`} change={`${((stats.activeRules/stats.totalRules)*100).toFixed(0)}% Coverage`} color="#10b981" icon="🛡️" />
+            <MetricCard title="AVG EXECUTION" value={`${stats.avgExecutionTime.toFixed(0)}ms`} change="Latency" color="#a855f7" icon="⚡" />
           </section>
 
           <div className="content-grid">
             <div style={{background: "#0f172a", border: "1px solid #1e293b", borderRadius: "16px", padding: "20px"}}>
-               <p style={{color: "#94a3b8", fontSize: "12px", marginBottom: "15px"}}>TERMINAL_PAYLOAD_ANALYSIS</p>
-               <pre style={{color: "#4ade80", background: "#020617", padding: "20px", borderRadius: "8px", overflowX: "auto"}}>
-                  {`{ "payload": "${stats.latestPayload}", "status": "DETECTED" }`}
+               <p style={{color: "#94a3b8", fontSize: "12px", marginBottom: "15px"}}>LIVE_PAYLOAD_MONITOR</p>
+               <pre style={{color: "#4ade80", background: "#020617", padding: "20px", borderRadius: "8px", overflowX: "auto", fontSize:'13px'}}>
+                  {`{ 
+  "latest_payload": "${stats.latestPayload}", 
+  "engine_status": "ANALYZING",
+  "avg_speed": "${stats.avgExecutionTime.toFixed(2)}ms" 
+}`}
                </pre>
             </div>
 
             <div style={{background: "#0f172a", border: "1px solid #1e293b", borderRadius: "16px", padding: "30px", textAlign: "center"}}>
-               <p style={{color: "#fff", marginBottom: "20px"}}>THREAT RATIO</p>
-               <div style={{width: "120px", height: "120px", border: "8px solid #3b82f6", borderRadius: "50%", margin: "0 auto 20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", fontWeight: "bold", color:'white'}}>
-                {(100 - stats.successRate).toFixed(1)}%
+               <p style={{color: "#fff", marginBottom: "20px"}}>BREACH PROBABILITY</p>
+               <div style={{width: "120px", height: "120px", border: `8px solid ${stats.successRate > 20 ? '#ef4444' : '#3b82f6'}`, borderRadius: "50%", margin: "0 auto 20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", fontWeight: "bold", color:'white'}}>
+                {stats.successRate}%
                </div>
-               <button className="blue-action-btn" onClick={handleExportLogs}>Export logs</button>
+               <button className="blue-action-btn" onClick={handleExportLogs}>Export</button>
             </div>
           </div>
         </main>

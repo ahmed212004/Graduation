@@ -2,16 +2,18 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import { motion, AnimatePresence } from "framer-motion"; // ضفنا الأنيميشن
 import "../style/Auth.css";
 
 function RegisterPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState([]); // دي المصفوفة اللي هنخزن فيها الأخطاء
+  const [showPassword, setShowPassword] = useState(false); // لإظهار الباسورد
+  const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setErrors([]); // بنصفر الأخطاء أول ما المستخدم يبدأ يكتب تاني
+    setErrors([]);
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -20,32 +22,17 @@ function RegisterPage() {
     try {
       setLoading(true);
       setErrors([]);
-      
       await api.post("/api/Authentication/register", form);
-      
       localStorage.clear();
       sessionStorage.clear();
-
-      navigate("/VerifyAccount", { 
-        state: { email: form.email }, 
-        replace: true 
-      });
-
+      navigate("/VerifyAccount", { state: { email: form.email }, replace: true });
     } catch (err) {
-      console.error("Register Error:", err.response?.data);
-
-      // هنا اللعبة كلها: بنشوف السيرفر بعت أخطاء Validation ولا لأ
       const serverErrors = err.response?.data?.errors;
-
       if (serverErrors) {
-        /** * السيرفر بيبعت الأخطاء كـ Object: { Password: ["error1", "error2"], Email: ["error3"] }
-         * إحنا بنحولها لمصفوفة واحدة (Flat Array) عشان نعرضها تحت بعضها
-         */
         const allErrors = Object.values(serverErrors).flat();
         setErrors(allErrors);
       } else {
-        // لو مفيش أخطاء محددة، بنعرض العنوان العام للخطأ أو رسالة افتراضية
-        const fallbackMsg = err.response?.data?.title || "Registration failed. Please check your data.";
+        const fallbackMsg = err.response?.data?.title || "Registration failed.";
         setErrors([fallbackMsg]);
       }
     } finally {
@@ -63,17 +50,29 @@ function RegisterPage() {
           <p className="auth-brand-subtitle">NEW RECRUIT CLEARANCE</p>
         </div>
 
-        <div className="auth-card">
-          {/* عرض الأخطاء بشكل قائمة (Bullet Points) */}
-          {errors.length > 0 && (
-            <div className="auth-error-box" style={{ textAlign: "left" }}>
-              <ul style={{ margin: 0, paddingLeft: "20px", color: "#ff4d4d", fontSize: "0.9rem" }}>
-                {errors.map((error, index) => (
-                  <li key={index} style={{ marginBottom: "5px" }}>{error}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+        {/* ضفنا نفس الـ motion.div اللي في الـ Login */}
+        <motion.div 
+          className="auth-card"
+          initial={{ opacity: 0, y: 40 }} 
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <AnimatePresence mode="wait">
+            {errors.length > 0 && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }} 
+                animate={{ opacity: 1, scale: 1 }} 
+                exit={{ opacity: 0 }}
+                className="auth-error-box" 
+                style={{ textAlign: "left" }}
+              >
+                <ul style={{ margin: 0, paddingLeft: "20px", color: "#ff4d4d", fontSize: "0.9rem" }}>
+                  {errors.map((error, index) => (
+                    <li key={index} style={{ marginBottom: "5px" }}>⚠️ {error}</li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <form onSubmit={handleSubmit}>
             <div className="auth-input-group">
@@ -97,20 +96,29 @@ function RegisterPage() {
                 <span className="auth-icon">🔒</span>
                 <input 
                   className="auth-input" 
-                  type="password" 
+                  type={showPassword ? "text" : "password"} // تغيير النوع ديناميكياً
                   name="password" 
                   placeholder="••••••••" 
                   onChange={handleChange} 
                   required 
                 />
+                {/* زر إظهار الباسورد بنفس شكل الـ Login */}
+                <button 
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}
+                >
+                  {showPassword ? "👁️" : "🙈"}
+                </button>
               </div>
               <small style={{ color: "#64748b", fontSize: "0.75rem", marginTop: "5px", display: "block" }}>
-                Must include: Uppercase, Lowercase, Number, and Special Character (@#$!).
+                Must include: Uppercase, Lowercase, Number, and Special Character.
               </small>
             </div>
 
             <button className="auth-submit-btn" disabled={loading}>
-              {loading ? "INITIALIZING..." : "Sign Up"}
+              {loading ? "INITIALIZING..." : "SIGN UP"}
             </button>
           </form>
 
@@ -119,7 +127,7 @@ function RegisterPage() {
               Already have access? <span onClick={() => navigate('/login')} className="auth-link" style={{cursor: 'pointer'}}>Login</span>
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
