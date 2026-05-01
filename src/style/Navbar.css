@@ -8,7 +8,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 60px; /* تقليل الـ padding شوية */
-  background:#112240; /* خلفية شفافة غامقة */
+  background:#1452bd; /* خلفية شفافة غامقة */
   backdrop-filter: blur(10px); /* تأثير زجاجي */
   color: #fff;
   z-index: 1000;
@@ -139,9 +139,15 @@
     height: 70px; /* ارتفاع ثابت */
     top: 0;
     z-index: 1000;
-    background: #0f172a;
+    background: #1a3f80;
     display: flex;
     align-items: center;
     padding: 0 20px;
     border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+}
+/* تنسيق صورة اللوجو الجديد */
+.navbar-logo-img {
+    height: 80px; /* اضبط الارتفاع المناسب ليك هنا */
+    width: auto; /* عشان يحافظ على أبعاد الصورة */
+    object-fit: contain; /* عشان متتمطش */
 }

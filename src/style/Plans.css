@@ -232,7 +232,7 @@
 
 /* الألوان والخطوط العامة */
 .plans-page-wrapper {
-    background-color: #020617; /* لون الخلفية الغامق من الصورة */
+    background-color: #0a192f; /* لون الخلفية الغامق من الصورة */
     color: white;
     min-height: 100vh;
     padding-top: 100px;
@@ -244,6 +244,7 @@
     margin: 0 auto;
     padding: 20px;
     text-align: center;
+    background-color: #0a192f;
 }
 
 /* Header Section */

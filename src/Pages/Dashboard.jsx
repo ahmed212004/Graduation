@@ -28,7 +28,7 @@ function Dashboard() {
     successfulAttacks: 0,
     successRate: 0,
     latestPayload: "Loading...",
-    rawData: [] // لحفظ البيانات الأصلية لغرض التصدير
+    rawData: [] 
   });
   const [loading, setLoading] = useState(true);
 
@@ -57,36 +57,35 @@ function Dashboard() {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
-  // 🔥 دالة تصدير البيانات لملف CSV
+  // 🔥 دالة تصدير البيانات لملف CSV (بدون Attack ID)
   const handleExportLogs = () => {
     if (stats.rawData.length === 0) {
       alert("No attack logs available to export.");
       return;
     }
 
-    // تجهيز العناوين (Headers)
-    const headers = ["Attack ID", "Technique", "Payload", "Status Code", "Execution Time (ms)", "Result"];
+    // 1. تجهيز العناوين (بدون Attack ID)
+    const headers = ["Technique", "Payload", "Status Code", "Execution Time (ms)", "Result"];
     
-    // تحويل البيانات لصفوف نصية
+    // 2. تحويل البيانات لصفوف نصية مع استبعاد الـ attackId
     const csvRows = [
-      headers.join(","), // الصف الأول: العناوين
+      headers.join(","), 
       ...stats.rawData.map(attack => [
-        attack.attackId,
-        `"${attack.technique}"`, // علامات التنصيص لمنع تداخل الفواصل داخل النص
-        `"${attack.payload.replace(/"/g, '""')}"`, // معالجة علامات التنصيص داخل الـ Payload
+        `"${attack.technique}"`, 
+        `"${attack.payload.replace(/"/g, '""')}"`, 
         attack.statusCode,
         attack.executionTimeMs,
         `"${attack.result}"`
       ].join(","))
     ];
 
-    // إنشاء ملف الـ Blob وتنزيله
+    // 3. إنشاء الملف وتنزيله
     const csvContent = csvRows.join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `StrikeDefender_Logs_${new Date().toLocaleDateString()}.csv`);
+    link.setAttribute("download", `StrikeDefender_Clean_Logs_${new Date().toLocaleDateString()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -124,7 +123,7 @@ function Dashboard() {
           <section className="top-grid">
             <MetricCard title="TOTAL ANALYZED" value={<CountUp end={stats.totalAttacks} />} change="WAF Monitoring" color="#3b82f6" icon="📡" />
             <MetricCard title="BREACHES FOUND" value={<CountUp end={stats.successfulAttacks} />} change="Action Required" color="#ef4444" icon="⚠️" />
-            <MetricCard title="INTEGRITY SCORE" value={`${100 - stats.successRate}%`} change="System Health" color="#10b981" icon="🛡️" />
+            <MetricCard title="INTEGRITY SCORE" value={`${(100 - stats.successRate).toFixed(2)}%`} change="System Health" color="#10b981" icon="🛡️" />
           </section>
 
           <div className="content-grid">
@@ -138,11 +137,9 @@ function Dashboard() {
             <div style={{background: "#0f172a", border: "1px solid #1e293b", borderRadius: "16px", padding: "30px", textAlign: "center"}}>
                <p style={{color: "#fff", marginBottom: "20px"}}>THREAT RATIO</p>
                <div style={{width: "120px", height: "120px", border: "8px solid #3b82f6", borderRadius: "50%", margin: "0 auto 20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", fontWeight: "bold", color:'white'}}>
-                {100 - stats.successRate}%
+                {(100 - stats.successRate).toFixed(1)}%
                </div>
-               {/* التعديل هنا: إضافة الـ onClick */}
                <button className="blue-action-btn" onClick={handleExportLogs}>Export logs</button>
-               <button className="dark-action-btn">AI Settings</button>
             </div>
           </div>
         </main>

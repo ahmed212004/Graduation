@@ -2,7 +2,7 @@
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  background-color: #020617; /* لون الخلفية الداكن جداً */
+  background-color: #0a192f; /* لون الخلفية الداكن جداً */
   width: 100%;
   overflow-x: hidden;
 }
@@ -227,3 +227,4 @@
     padding: 90px 15px 20px 15px; /* مساحة أصغر قليلاً للموبايل */
   }
 }
+

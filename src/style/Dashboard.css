@@ -10,7 +10,7 @@ html, body {
 
 .page-wrapper {
   min-height: 100vh;
-  background: #020617;
+  background: #0a192f;
 }
 
 /* --- Dashboard Layout --- */
@@ -155,3 +155,4 @@ html, body {
   .top-grid { grid-template-columns: 1fr; } /* مربعات الموبايل تحت بعض */
   .blur-effect { filter: blur(5px); pointer-events: none; opacity: 0.5; }
 }
+

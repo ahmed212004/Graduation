@@ -9,22 +9,21 @@ function CompleteProfile() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ fullName: "", phoneNumber: "", birthDate: "", profileImage: null });
   const [imagePreview, setImagePreview] = useState(null);
-  const [fileName, setFileName] = useState(""); // إضافة: لعرض اسم الملف المختَار
+  const [fileName, setFileName] = useState(""); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // التأكد من أن الملف صورة
       if (!file.type.startsWith('image/')) {
         setError("Please upload a valid image file (jpg, png).");
         return;
       }
       setFormData({ ...formData, profileImage: file });
       setImagePreview(URL.createObjectURL(file));
-      setFileName(file.name); // حفظ اسم الملف
-      setError(""); // مسح أي خطأ سابق
+      setFileName(file.name);
+      setError("");
     }
   };
 
@@ -49,7 +48,10 @@ function CompleteProfile() {
       await api.post("/api/Accounts/Complete-Profile", data, {
         headers: { "Content-Type": "multipart/form-data" }
       });
-      navigate("/dashboard");
+      
+      // 🔥 التعديل هنا: التوجيه لصفحة الـ Profile بدلاً من الـ Dashboard
+      navigate("/profile"); 
+
     } catch (err) {
       console.error("Profile Error:", err.response?.data);
       const serverError = err.response?.data?.message || "Failed to finalize profile.";
@@ -84,7 +86,6 @@ function CompleteProfile() {
 
           <form onSubmit={handleSubmit}>
             
-            {/* 📸 قسم رفع الصورة المطور (Drop Zone Style) */}
             <div className="auth-input-group">
               <label className="auth-label">PROFILE PHOTO (REQUIRED)</label>
               

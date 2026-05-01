@@ -52,6 +52,13 @@ function Sidebar({ isOpen, setIsOpen }) {
           </li>
         </Link>
 
+          {/* Plan page */}
+        <Link to="/plans" className="sidebar-link" onClick={handleLinkClick}>
+          <li className={`sidebar-item ${isActive("/plans") ? "active" : ""}`}>
+            <span className="sidebar-icon">💻</span> Start System
+          </li>
+        </Link>
+
         
 
         <div className="sidebar-divider">ADMINISTRATION</div>
@@ -73,7 +80,7 @@ function Sidebar({ isOpen, setIsOpen }) {
         {/* Initialize Identity / Complete Profile */}
         <Link to="/complete-profile" className="sidebar-link" onClick={handleLinkClick}>
           <li className={`sidebar-item ${isActive("/complete-profile") ? "active" : ""}`}>
-            <span className="sidebar-icon">🆔</span> Identity Setup
+            <span className="sidebar-icon">🆔</span> Manage Profile
           </li>
         </Link>
       </ul>
