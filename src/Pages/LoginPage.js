@@ -138,7 +138,7 @@ function Login() {
             </div>
 
             <button className="auth-submit-btn" disabled={loading}>
-              {loading ? "AUTHENTICATING..." : "INITIATE LOGIN"}
+              {loading ? "AUTHENTICATING..." : "LOGIN"}
             </button>
             
             <div className="auth-card-footer">

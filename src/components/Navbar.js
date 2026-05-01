@@ -22,7 +22,6 @@ export default function Navbar() {
 
       {/* Links */}
       <div className="navbar-links">
-        <span className={`navbar-link ${location.pathname === "/solutions" ? "active" : ""}`} onClick={() => navigate("/solutions")}>Solutions</span>
         <span className={`navbar-link ${location.pathname === "/Dashboard" ? "active" : ""}`} onClick={() => navigate("/Dashboard")}>Dashboard</span>
         <span className={`navbar-link ${location.pathname === "/plans" ? "active" : ""}`} onClick={() => navigate("/plans")}>Pricing</span>
         <span className={`navbar-link ${location.pathname === "/about" ? "active" : ""}`} onClick={() => navigate("/about")}>About</span>

@@ -28,20 +28,23 @@ function Dashboard() {
     successfulAttacks: 0,
     successRate: 0,
     latestPayload: "Loading...",
+    rawData: [] // لحفظ البيانات الأصلية لغرض التصدير
   });
   const [loading, setLoading] = useState(true);
 
   const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get("/api/Attacks/Get_Successful_Attacks?PageNumber=1&PageSize=1");
+      const response = await api.get("/api/Attacks/Get_Successful_Attacks?PageNumber=1&PageSize=50");
       const successCount = response.data.totalCount || 0;
       const rate = ((successCount / 15000) * 100).toFixed(2);
+      
       setStats({
         totalAttacks: 15000,
         successfulAttacks: successCount,
         successRate: rate,
         latestPayload: response.data.items?.[0]?.payload || "System Clear",
+        rawData: response.data.items || [] 
       });
     } catch (err) {
       console.error(err);
@@ -53,6 +56,41 @@ function Dashboard() {
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
+
+  // 🔥 دالة تصدير البيانات لملف CSV
+  const handleExportLogs = () => {
+    if (stats.rawData.length === 0) {
+      alert("No attack logs available to export.");
+      return;
+    }
+
+    // تجهيز العناوين (Headers)
+    const headers = ["Attack ID", "Technique", "Payload", "Status Code", "Execution Time (ms)", "Result"];
+    
+    // تحويل البيانات لصفوف نصية
+    const csvRows = [
+      headers.join(","), // الصف الأول: العناوين
+      ...stats.rawData.map(attack => [
+        attack.attackId,
+        `"${attack.technique}"`, // علامات التنصيص لمنع تداخل الفواصل داخل النص
+        `"${attack.payload.replace(/"/g, '""')}"`, // معالجة علامات التنصيص داخل الـ Payload
+        attack.statusCode,
+        attack.executionTimeMs,
+        `"${attack.result}"`
+      ].join(","))
+    ];
+
+    // إنشاء ملف الـ Blob وتنزيله
+    const csvContent = csvRows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `StrikeDefender_Logs_${new Date().toLocaleDateString()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   if (loading) return <div className="page-wrapper" style={{display:'flex', justifyContent:'center', alignItems:'center', color:'white', height:'100vh'}}>LOADING...</div>;
 
@@ -74,7 +112,7 @@ function Dashboard() {
 
           <header className="dash-header">
             <div>
-              <h1 className="dash-title">Intelligence Overview <span style={{fontSize:'12px', background:'rgba(59,130,246,0.1)', color:'#3b82f6', padding:'4px 8px', borderRadius:'10px'}}>LIVE</span></h1>
+              <h1 className="dash-title">STRIKE DEFENDER <span style={{fontSize:'12px', background:'rgba(59,130,246,0.1)', color:'#3b82f6', padding:'4px 8px', borderRadius:'10px'}}>LIVE</span></h1>
               <p className="dash-subtitle">Real-time AI monitoring and threat detection.</p>
             </div>
             <div className="action-buttons">
@@ -102,7 +140,8 @@ function Dashboard() {
                <div style={{width: "120px", height: "120px", border: "8px solid #3b82f6", borderRadius: "50%", margin: "0 auto 20px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", fontWeight: "bold", color:'white'}}>
                 {100 - stats.successRate}%
                </div>
-               <button className="blue-action-btn">Export Logs</button>
+               {/* التعديل هنا: إضافة الـ onClick */}
+               <button className="blue-action-btn" onClick={handleExportLogs}>Export logs</button>
                <button className="dark-action-btn">AI Settings</button>
             </div>
           </div>

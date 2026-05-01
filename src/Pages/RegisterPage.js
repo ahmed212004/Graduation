@@ -110,13 +110,13 @@ function RegisterPage() {
             </div>
 
             <button className="auth-submit-btn" disabled={loading}>
-              {loading ? "INITIALIZING..." : "REQUEST CLEARANCE"}
+              {loading ? "INITIALIZING..." : "Sign Up"}
             </button>
           </form>
 
           <div className="auth-card-footer">
             <p className="auth-link-text">
-              Already have access? <span onClick={() => navigate('/login')} className="auth-link" style={{cursor: 'pointer'}}>Secure Login</span>
+              Already have access? <span onClick={() => navigate('/login')} className="auth-link" style={{cursor: 'pointer'}}>Login</span>
             </p>
           </div>
         </div>

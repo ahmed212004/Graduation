@@ -4,9 +4,9 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { motion } from "framer-motion";
 
-// استدعاء الستايل الجديد
+// استدعاء الستايل
 import "../style/SuccessfulAttacks.css";
-import "../style/Dashboard.css"; // لضمان عمل الـ mobile-menu-btn والـ blur
+import "../style/Dashboard.css"; 
 
 const AttackRow = ({ attack }) => (
   <motion.tr 
@@ -29,7 +29,7 @@ function SuccessfulAttacks() {
   const [attacks, setAttacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // نفس منطق الداشبورد
+  const [isMenuOpen, setIsMenuOpen] = useState(false); 
   const pageSize = 10;
 
   const fetchAttacks = useCallback(async () => {
@@ -63,8 +63,10 @@ function SuccessfulAttacks() {
       <div className="attacks-container">
         <Sidebar isOpen={isMenuOpen} />
         
-        <main className={`attacks-main ${isMenuOpen ? 'blur-effect' : ''}`} onClick={() => setIsMenuOpen(false)}>
-          <header className="attacks-header">
+        <main className={`attacks-main ${isMenuOpen ? 'blur-effect' : ''}`} onClick={() => isMenuOpen && setIsMenuOpen(false)}>
+          
+          {/* الـ Header الآن سيصبح Sticky من خلال الـ CSS */}
+          <header className="attacks-header sticky-header">
             <div>
               <h1 className="attacks-title">Breach Intelligence Log</h1>
               <p className="attacks-subtitle">Analyzing successfully executed payloads and techniques</p>
