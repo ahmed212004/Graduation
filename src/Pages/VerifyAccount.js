@@ -7,10 +7,13 @@ import "../style/Auth.css";
 function VerifyAccount() {
   const location = useLocation();
   const navigate = useNavigate();
-  
-  // استخراج الإيميل سواء جاي من الـ URL أو من الـ State (التنقل الداخلي)
+
+  // استخراج الإيميل من الـ query أو state
   const queryParams = new URLSearchParams(location.search);
-  const emailFromQuery = queryParams.get("email") || (location.state && location.state.email) || "";
+  const emailFromQuery =
+    queryParams.get("email") ||
+    (location.state && location.state.email) ||
+    "";
 
   const [email, setEmail] = useState(emailFromQuery);
   const [otp, setOtp] = useState("");
@@ -18,13 +21,14 @@ function VerifyAccount() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // تحديث الإيميل لو اتغير في الـ URL
+  // تحديث الإيميل لو اتغير
   useEffect(() => {
     if (emailFromQuery) {
       setEmail(emailFromQuery);
     }
   }, [emailFromQuery]);
 
+  // 🔹 تأكيد الكود
   const handleVerify = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -32,32 +36,66 @@ function VerifyAccount() {
     setMessage("");
 
     try {
-      // 🛑 استخدام الرابط الصحيح المتوافق مع الـ Backend بتاعك
-      await api.post("/api/Authentication/confirm-email", { 
-        email: email, 
-        otp: otp 
+      await api.post("/api/Authentication/confirm-email", {
+        email: email,
+        otp: otp,
       });
-      
+
       setMessage("Account activated successfully! Redirecting to login...");
-      
-      // التوجه للوجين بعد 3 ثواني لإعطاء فرصة لليوزر يشوف رسالة النجاح
+
       setTimeout(() => {
         navigate("/login");
       }, 3000);
-
     } catch (err) {
       console.error("Verification Error:", err.response?.data);
-      
-      // التعامل الذكي مع رسائل الخطأ من الـ API
+
       const errorData = err.response?.data;
-      
-      if (errorData?.errors?.["OTP.Invalid"] || errorData?.errors?.["otp"]) {
+
+      if (
+        errorData?.errors?.["OTP.Invalid"] ||
+        errorData?.errors?.["otp"]
+      ) {
         setError("Invalid OTP code. Please check your email and try again.");
-      } else if (errorData?.message) {
-        setError(errorData.message);
       } else {
-        setError(errorData?.title || "Verification failed. Please try again.");
+        setError(
+          errorData?.title ||
+            errorData?.message ||
+            "Verification failed. Please try again."
+        );
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔹 إعادة إرسال الكود
+  const handleResendCode = async () => {
+    if (!email) {
+      setError("Email is missing. Please go back and try again.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+      setMessage("");
+
+      await api.post(
+        "/api/Authentication/resend-confirmation-email",
+        {
+          email: email,
+        }
+      );
+
+      setMessage("A new verification code has been sent to your email.");
+    } catch (err) {
+      console.error("Resend Error:", err.response?.data);
+
+      setError(
+        err.response?.data?.title ||
+          err.response?.data?.message ||
+          "Failed to resend verification code."
+      );
     } finally {
       setLoading(false);
     }
@@ -66,6 +104,7 @@ function VerifyAccount() {
   return (
     <div className="auth-page-wrapper">
       <Navbar />
+
       <div className="auth-container">
         <div className="auth-header">
           <div className="auth-logo-box">🛡️</div>
@@ -74,21 +113,33 @@ function VerifyAccount() {
         </div>
 
         <div className="auth-card">
-          <p style={{ color: "#ccc", textAlign: "center", marginBottom: "20px" }}>
-            Verification code sent to: <br/>
-            <strong style={{ color: "#a855f7" }}>{email || "your email"}</strong>
+          <p
+            style={{
+              color: "#ccc",
+              textAlign: "center",
+              marginBottom: "20px",
+            }}
+          >
+            Verification code sent to: <br />
+            <strong style={{ color: "#a855f7" }}>
+              {email || "your email"}
+            </strong>
           </p>
 
           {error && <div className="auth-error-box">⚠️ {error}</div>}
+
           {message && (
-            <div className="auth-success-box" style={{ 
-              color: "#10b981", 
-              textAlign: "center", 
-              padding: "10px", 
-              background: "rgba(16, 185, 129, 0.1)", 
-              borderRadius: "8px", 
-              marginBottom: "15px" 
-            }}>
+            <div
+              className="auth-success-box"
+              style={{
+                color: "#10b981",
+                textAlign: "center",
+                padding: "10px",
+                background: "rgba(16, 185, 129, 0.1)",
+                borderRadius: "8px",
+                marginBottom: "15px",
+              }}
+            >
               ✅ {message}
             </div>
           )}
@@ -98,16 +149,18 @@ function VerifyAccount() {
               <label className="auth-label">ENTER OTP CODE</label>
               <div className="auth-input-wrapper">
                 <span className="auth-icon">🔢</span>
-                <input 
-                  className={`auth-input ${error ? 'auth-input-error' : ''}`}
-                  type="text" 
-                  placeholder="6-Digit Code" 
-                  value={otp} 
+                <input
+                  className={`auth-input ${
+                    error ? "auth-input-error" : ""
+                  }`}
+                  type="text"
+                  placeholder="6-Digit Code"
+                  value={otp}
                   onChange={(e) => {
                     setOtp(e.target.value);
-                    setError(""); // مسح الخطأ بمجرد ما اليوزر يبدأ يكتب
-                  }} 
-                  required 
+                    setError("");
+                  }}
+                  required
                 />
               </div>
             </div>
@@ -116,10 +169,20 @@ function VerifyAccount() {
               {loading ? "VALIDATING..." : "CONFIRM ACTIVATION"}
             </button>
           </form>
-          
+
           <div className="auth-card-footer">
             <p className="auth-link-text">
-              Didn't get the code? <span onClick={() => window.location.reload()} className="auth-link" style={{cursor: 'pointer'}}>Resend</span>
+              Didn't get the code?{" "}
+              <span
+                onClick={!loading ? handleResendCode : null}
+                className="auth-link"
+                style={{
+                  cursor: loading ? "not-allowed" : "pointer",
+                  opacity: loading ? 0.5 : 1,
+                }}
+              >
+                {loading ? "Sending..." : "Resend"}
+              </span>
             </p>
           </div>
         </div>

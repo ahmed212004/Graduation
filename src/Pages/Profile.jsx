@@ -94,9 +94,7 @@ function Profile() {
                   </p>
                 </div>
 
-                <div style={{marginTop: '30px'}}>
-                  <button className="refresh-btn">Edit Profile</button>
-                </div>
+                
               </section>
 
               <section className="profile-side-card">
